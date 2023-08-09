@@ -1,0 +1,33 @@
+{
+	"schemaVersion": 1,
+	"id": "shifting-wares",
+	"version": "${version}",
+	"name": "Shifting Wares",
+	"description": "Villagers will occasionally reroll their trade offers",
+	"authors": [
+		"Estecka"
+	],
+	"contact": {
+		"homepage": "https://modrinth.com/mod/shifting-wares",
+		"sources": "https://github.com/Estecka/mc-Shifting-Wares"
+	},
+	"license": "GNU AGPLv3",
+	"icon": "assets/shifting-wares/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"tk.estecka.shiftingwares.ShiftingWares"
+		]
+	},
+	"mixins": [
+		"shifting-wares.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.14.22",
+		"minecraft": "~1.20.1",
+		"java": ">=17",
+		"fabric-api": "*"
+	},
+	"suggests": {
+	}
+}
