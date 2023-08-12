@@ -8,9 +8,9 @@ The most noticeable effects will be felt on any profession able to sell enchante
 
 There are two gamerules that control when trades can be re-rolled. When creating a new world, those rules are On by default, and found under the "Mobs" category. Disabling all rules effectively nullifies the mod.
 - `shiftingWares.dailyReroll`:
-	Causes villager to reroll **all** their offers once per day, the first time they restock at their job station.
+	Causes villagers to reroll **all** their offers once per day, the first time they restock at their job station.
 - `shiftingWares.depleteReroll`:
-	Causes villager to re-roll any **fully depleted** trade offer, whenever they restock at their job station.
+	Causes villagers to re-roll any **fully depleted** trade offer, whenever they restock at their job station.
 	This also prevents offers from being refilled, if they have a remaining uses.
 
 ## Caveats
