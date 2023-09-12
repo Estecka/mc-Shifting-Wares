@@ -6,6 +6,7 @@ import java.util.List;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.village.TradeOffers.Factory;
@@ -38,6 +39,9 @@ public class TradeShuffler
 			return;
 		}
 
+		ShiftingWares.LOGGER.warn("Preroll");
+		Print(offers);
+
 		for (int jobLevel=0; (2*jobLevel)<offers.size(); jobLevel++){
 			int i1 = jobLevel*2;
 			int i2 = i1 + 1;
@@ -59,11 +63,13 @@ public class TradeShuffler
 				SingleReroll(i2, levelPool);
 		}
 
+		ShiftingWares.LOGGER.warn("PostRoll");
+		Print(offers);
 	}
 
 	private void	SingleReroll(int i, Factory[] levelPool){
 		TradeOffers.Factory result = levelPool[random.nextInt(levelPool.length)];
-		offers.set(i, result.create(villager, random));
+		SetOffer(i, result.create(villager, random));
 	}
 
 	private void	DuplicataAwareReroll(int i1, int i2, Factory[] levelPool){
@@ -75,19 +81,31 @@ public class TradeShuffler
 			
 			int roll;
 			roll = random.nextInt(randomPool.size());
-			offers.set(i1, randomPool.get(roll).create(villager, random));
+			SetOffer(i1, randomPool.get(roll).create(villager, random));
 
 			randomPool.remove(roll);
 
 			roll = random.nextInt(randomPool.size());
-			offers.set(i2, randomPool.get(roll).create(villager, random));
+			SetOffer(i2, randomPool.get(roll).create(villager, random));
 		}
 		else 
 		{
 			ShiftingWares.LOGGER.warn("Trade pool is smaller than the number of trades for this job level: {} lvl{}", job, i1/2);
-			offers.set(i1, levelPool[0].create(villager, random));
-			offers.set(i2, levelPool[0].create(villager, random));
+			SetOffer(i1, levelPool[0].create(villager, random));
+			SetOffer(i2, levelPool[0].create(villager, random));
 		}
+	}
+
+	private void	SetOffer(int index, TradeOffer newOffer){
+		if (newOffer == null)
+			ShiftingWares.LOGGER.warn("{} failed to generate a valid offer at index {}", villager, index);
+		else
+			offers.set(index, newOffer);
+	}
+
+	private void	Print(TradeOfferList list){
+		for (var offer : list)
+			ShiftingWares.LOGGER.warn("{}", offer);
 	}
 	
 }
