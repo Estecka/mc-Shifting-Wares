@@ -39,9 +39,6 @@ public class TradeShuffler
 			return;
 		}
 
-		ShiftingWares.LOGGER.warn("Preroll");
-		Print(offers);
-
 		for (int jobLevel=0, i=0; i<offers.size(); ++jobLevel)
 		{
 			if (jobPool.size() <= jobLevel){
@@ -81,9 +78,6 @@ public class TradeShuffler
 					++i;
 			}
 		}
-
-		ShiftingWares.LOGGER.warn("PostRoll");
-		Print(offers);
 	}
 
 	@Nullable
@@ -120,10 +114,4 @@ public class TradeShuffler
 		}
 		return result;
 	}
-
-	private void	Print(TradeOfferList list){
-		for (var offer : list)
-			ShiftingWares.LOGGER.warn("{}", offer);
-	}
-	
 }
