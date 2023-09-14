@@ -11,25 +11,19 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.map.MapIcon;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers.SellMapFactory;
-import tk.estecka.shiftingwares.ISellMapFactoryDuck;
 import tk.estecka.shiftingwares.IVillagerEntityDuck;
 import tk.estecka.shiftingwares.ShiftingWares;
 
 @Mixin(SellMapFactory.class)
 public abstract class SellMapFactoryMixin
-implements ISellMapFactoryDuck
 {
 	@Shadow @Final private int price;
 	@Shadow @Final private int maxUses;
 	@Shadow @Final private int experience;
 	@Shadow @Final private String nameKey;
-	@Shadow @Final private MapIcon.Type iconType;
-
-	@Shadow public abstract TradeOffer	create(Entity entity, Random random);
 
 	@Inject( method="create", at=@At("HEAD"), cancellable=true)
 	public void	restoreCached(Entity entity, Random random, CallbackInfoReturnable<TradeOffer> info){
@@ -43,9 +37,6 @@ implements ISellMapFactoryDuck
 			ItemStack stack = cachedMap.get();
 			ShiftingWares.LOGGER.info("Reselling previously available map #{}", FilledMapItem.getMapId(stack));
 			info.setReturnValue(new TradeOffer( new ItemStack(Items.EMERALD, this.price), new ItemStack(Items.COMPASS), stack, this.maxUses, this.experience, 0.2f ));
-		}
-		else {
-			ShiftingWares.LOGGER.info("Selling a brand new map: {}.", entity);
 		}
 	}
 

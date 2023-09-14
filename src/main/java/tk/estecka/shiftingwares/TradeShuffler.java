@@ -41,7 +41,7 @@ public class TradeShuffler
 			return;
 		}
 
-		duck.UpdateCachedMaps();
+		MapTradesCache.FillCacheFromTrades(duck);
 		for (int jobLevel=0, i=0; i<offers.size(); ++jobLevel)
 		{
 			if (jobPool.size() <= jobLevel){
@@ -81,6 +81,7 @@ public class TradeShuffler
 					++i;
 			}
 		}
+		MapTradesCache.FillCacheFromTrades(duck);
 	}
 
 	@Nullable

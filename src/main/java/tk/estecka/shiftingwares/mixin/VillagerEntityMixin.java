@@ -39,22 +39,19 @@ implements IVillagerEntityDuck
 			return Optional.empty();
 	}
 	public void	AddCachedMap(String key, ItemStack mapItem){
+		Integer neoId=FilledMapItem.getMapId(mapItem);
 		if (createdMaps.containsKey(key)){
 			Integer oldId=FilledMapItem.getMapId(createdMaps.get(key));
-			Integer neoId=FilledMapItem.getMapId(mapItem);
 			if (!neoId.equals(oldId))
 				ShiftingWares.LOGGER.error("Overwriting a villager's existing map: #{}->#{} @ {}", oldId, neoId, key);
 			else if (ItemStack.areEqual(mapItem, createdMaps.get(key)))
-				ShiftingWares.LOGGER.warn("Updating a villager's existing map#{} @ {}", oldId, key);
+				ShiftingWares.LOGGER.warn("Updating a villager's existing map#{} @ {}", neoId, key);
 		}
+		else
+			ShiftingWares.LOGGER.info("New map #{} created by {}", neoId, villager);
 
 		createdMaps.put(key, mapItem);
 	}
-
-	public void UpdateCachedMaps(){
-		MapTradesCache.FillCacheFromTrades(this.createdMaps, villager.getOffers());
-	}
-
 
 	/**
 	 * Triggered once a day, regardless of whether the villager needs restocks.
@@ -117,14 +114,14 @@ implements IVillagerEntityDuck
 
 	@Inject ( method="writeCustomDataToNbt", at=@At("TAIL"))
 	void	WriteCachedMapsToNbt(NbtCompound nbt, CallbackInfo info){
-		this.UpdateCachedMaps();
+		MapTradesCache.FillCacheFromTrades(this);
 		MapTradesCache.WriteMapCacheToNbt(nbt, this.createdMaps);
 	}
 
 	@Inject ( method="readCustomDataFromNbt", at=@At("TAIL"))
 	void	ReadCachedMapsFromNbt(NbtCompound nbt, CallbackInfo info){
 		MapTradesCache.ReadMapCacheFromNbt(nbt, this.createdMaps);
-		this.UpdateCachedMaps();
+		MapTradesCache.FillCacheFromTrades(this);
 	}
 
 }

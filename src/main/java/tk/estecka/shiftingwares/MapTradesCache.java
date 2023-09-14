@@ -13,36 +13,32 @@ public class MapTradesCache
 {
 	static public final String MAPID_CACHE = "shifting-wares:created_maps";
 
-	static public void	FillCacheFromTrades(Map<String,ItemStack> cacheMap, TradeOfferList offers){
+	static public void	FillCacheFromTrades(IVillagerEntityDuck villager){
+		TradeOfferList offers = villager.getOffers();
 		for (int i=0; i<offers.size(); ++i){
-			ItemStack mapItem = offers.get(i).getSellItem();
-			if (!mapItem.isOf(Items.FILLED_MAP))
+			ItemStack sellItem = offers.get(i).getSellItem();
+			if (!sellItem.isOf(Items.FILLED_MAP))
 				continue;
 
-			if (!mapItem.hasCustomName()){
-				ShiftingWares.LOGGER.error("Unable to identify map#{} with no name (slot {})", FilledMapItem.getMapId(mapItem), i);
+			if (!sellItem.hasCustomName()){
+				ShiftingWares.LOGGER.error("Unable to identify map#{} with no name (slot {})", FilledMapItem.getMapId(sellItem), i);
 				continue;
 			}
 
-			TextContent fullName = mapItem.getName().getContent();
+			TextContent fullName = sellItem.getName().getContent();
 			String nameKey;
 			if (fullName instanceof TranslatableTextContent)
 				nameKey = ((TranslatableTextContent)fullName).getKey();
 			else {
 				ShiftingWares.LOGGER.warn("Map name is not a translatation key: {}", fullName);
-				nameKey = mapItem.getName().getString();
+				nameKey = sellItem.getName().getString();
 			}
 
-			if (cacheMap.containsKey(nameKey)){
-				Integer oldId=FilledMapItem.getMapId(cacheMap.get(nameKey));
-				Integer neoId=FilledMapItem.getMapId(mapItem);
-				if (!neoId.equals(oldId))
-					ShiftingWares.LOGGER.error("Overwriting a villager's existing map: {}->{} @ {}", oldId, neoId, nameKey);
-				else if (!ItemStack.areEqual(mapItem, cacheMap.get(nameKey)))
-					ShiftingWares.LOGGER.warn("Updating a villager's existing map#{} in slot", oldId, i);
+			var oldItem = villager.GetCachedMap(nameKey);
+			if (oldItem.isPresent() && !ItemStack.areEqual(sellItem, oldItem.get())){
+				ShiftingWares.LOGGER.warn("Caught a map trade that wasn't properly cached: #{} @ {}", FilledMapItem.getMapId(sellItem), villager);
+				villager.AddCachedMap(nameKey, sellItem);
 			}
-
-			cacheMap.put(nameKey, mapItem);
 		}
 	}
 
