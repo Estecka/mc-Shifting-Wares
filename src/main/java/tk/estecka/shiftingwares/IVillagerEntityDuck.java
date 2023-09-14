@@ -1,9 +1,11 @@
 package tk.estecka.shiftingwares;
 
-import java.util.OptionalInt;
+import java.util.Optional;
+import net.minecraft.item.ItemStack;
 
 public interface IVillagerEntityDuck 
 {
 	void	UpdateCachedMaps();
-	OptionalInt	GetCachedMapId(int tradeIndex);
+	Optional<ItemStack>	GetCachedMap(String key);
+	void	AddCachedMap(String key, ItemStack mapItem);
 }

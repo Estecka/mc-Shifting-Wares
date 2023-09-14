@@ -1,6 +1,8 @@
 package tk.estecka.shiftingwares.mixin;
 
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.item.FilledMapItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
@@ -10,7 +12,7 @@ import tk.estecka.shiftingwares.ShiftingWares;
 import tk.estecka.shiftingwares.TradeShuffler;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.OptionalInt;
+import java.util.Optional;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,23 +25,36 @@ implements IVillagerEntityDuck
 {
 	private final VillagerEntity villager = (VillagerEntity)(Object)this;
 
-	private Map<Integer,Integer> ownedMaps = new HashMap<Integer,Integer>();
+	private final Map<String,ItemStack> createdMaps = new HashMap<String,ItemStack>();
 
 	private boolean	IsDailyRerollEnabled()   { return villager.getWorld().getGameRules().get(ShiftingWares.DAILY_RULE).get();    }
 	private boolean	IsDepleteRerollEnabled() { return villager.getWorld().getGameRules().get(ShiftingWares.DEPLETED_RULE).get(); }
 
 	static private final TradeOfferList EMPTY = new TradeOfferList();
 
-	public OptionalInt	GetCachedMapId(int tradeIndex){
-		if (this.ownedMaps.containsKey(tradeIndex))
-			return OptionalInt.of(this.ownedMaps.get(tradeIndex));
+	public Optional<ItemStack>	GetCachedMap(String key){
+		if (this.createdMaps.containsKey(key))
+			return Optional.of(this.createdMaps.get(key));
 		else
-			return OptionalInt.empty();
+			return Optional.empty();
+	}
+	public void	AddCachedMap(String key, ItemStack mapItem){
+		if (createdMaps.containsKey(key)){
+			Integer oldId=FilledMapItem.getMapId(createdMaps.get(key));
+			Integer neoId=FilledMapItem.getMapId(mapItem);
+			if (!neoId.equals(oldId))
+				ShiftingWares.LOGGER.error("Overwriting a villager's existing map: #{}->#{} @ {}", oldId, neoId, key);
+			else if (ItemStack.areEqual(mapItem, createdMaps.get(key)))
+				ShiftingWares.LOGGER.warn("Updating a villager's existing map#{} @ {}", oldId, key);
+		}
+
+		createdMaps.put(key, mapItem);
 	}
 
 	public void UpdateCachedMaps(){
-		MapTradesCache.FillFromTrades(this.ownedMaps, villager.getOffers());
+		MapTradesCache.FillCacheFromTrades(this.createdMaps, villager.getOffers());
 	}
+
 
 	/**
 	 * Triggered once a day, regardless of whether the villager needs restocks.
@@ -103,12 +118,12 @@ implements IVillagerEntityDuck
 	@Inject ( method="writeCustomDataToNbt", at=@At("TAIL"))
 	void	WriteCachedMapsToNbt(NbtCompound nbt, CallbackInfo info){
 		this.UpdateCachedMaps();
-		MapTradesCache.WriteMapToNbt(nbt, this.ownedMaps);
+		MapTradesCache.WriteMapCacheToNbt(nbt, this.createdMaps);
 	}
 
 	@Inject ( method="readCustomDataFromNbt", at=@At("TAIL"))
 	void	ReadCachedMapsFromNbt(NbtCompound nbt, CallbackInfo info){
-		this.ownedMaps = MapTradesCache.ReadMapFromNbt(nbt);
+		MapTradesCache.ReadMapCacheFromNbt(nbt, this.createdMaps);
 		this.UpdateCachedMaps();
 	}
 

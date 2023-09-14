@@ -1,49 +1,66 @@
 package tk.estecka.shiftingwares;
-import java.util.HashMap;
-import java.util.Map;
 
+import java.util.Map;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.text.TextContent;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.village.TradeOfferList;
 
-public class MapTradesCache {
-	static public final String MAPID_CACHE = "ownedMaps";
+public class MapTradesCache 
+{
+	static public final String MAPID_CACHE = "shifting-wares:created_maps";
 
-	static public void	FillFromTrades(Map<Integer,Integer> cacheMap, TradeOfferList offers){
+	static public void	FillCacheFromTrades(Map<String,ItemStack> cacheMap, TradeOfferList offers){
 		for (int i=0; i<offers.size(); ++i){
 			ItemStack mapItem = offers.get(i).getSellItem();
 			if (!mapItem.isOf(Items.FILLED_MAP))
 				continue;
 
-			Integer mapId = FilledMapItem.getMapId(mapItem);
-			if (mapId == null){
-				ShiftingWares.LOGGER.error("ItemStack in slot {} has no Map ID: {} ", i, mapItem);
+			if (!mapItem.hasCustomName()){
+				ShiftingWares.LOGGER.error("Unable to identify map#{} with no name (slot {})", FilledMapItem.getMapId(mapItem), i);
 				continue;
 			}
-			if (cacheMap.containsKey(i) && cacheMap.get(i)!=mapId)
-				ShiftingWares.LOGGER.warn("Overwritting previously known map for trade in slot {}: {}=>{}", i, cacheMap.get(i), mapId);
-			cacheMap.put(i, mapId);
+
+			TextContent fullName = mapItem.getName().getContent();
+			String nameKey;
+			if (fullName instanceof TranslatableTextContent)
+				nameKey = ((TranslatableTextContent)fullName).getKey();
+			else {
+				ShiftingWares.LOGGER.warn("Map name is not a translatation key: {}", fullName);
+				nameKey = mapItem.getName().getString();
+			}
+
+			if (cacheMap.containsKey(nameKey)){
+				Integer oldId=FilledMapItem.getMapId(cacheMap.get(nameKey));
+				Integer neoId=FilledMapItem.getMapId(mapItem);
+				if (!neoId.equals(oldId))
+					ShiftingWares.LOGGER.error("Overwriting a villager's existing map: {}->{} @ {}", oldId, neoId, nameKey);
+				else if (!ItemStack.areEqual(mapItem, cacheMap.get(nameKey)))
+					ShiftingWares.LOGGER.warn("Updating a villager's existing map#{} in slot", oldId, i);
+			}
+
+			cacheMap.put(nameKey, mapItem);
 		}
 	}
 
-	static public Map<Integer,Integer>	ReadMapFromNbt(NbtCompound nbt){
-		var r = new HashMap<Integer,Integer>();
+	static public Map<String,ItemStack>	ReadMapCacheFromNbt(NbtCompound nbt, Map<String, ItemStack> map){
 		var nbtmap = nbt.getCompound(MAPID_CACHE);
 		if (nbtmap == null)
-			return r;
-		for (var tag : nbtmap.getKeys()){
-			int i = Integer.parseInt(tag);
-			r.put(i, nbtmap.getInt(tag));
+			return map;
+
+		for (String key : nbtmap.getKeys()){
+			map.put(key, ItemStack.fromNbt(nbtmap.getCompound(key)));
 		}
-		return r;
+		return map;
 	}
 
-	static public NbtCompound	WriteMapToNbt(NbtCompound nbt, Map<Integer,Integer> map){
+	static public NbtCompound	WriteMapCacheToNbt(NbtCompound nbt, Map<String, ItemStack> map){
 		NbtCompound nbtmap = new NbtCompound();
 		for (var pair : map.entrySet())
-			nbtmap.putInt(pair.getKey().toString(), pair.getValue());
+			nbtmap.put(pair.getKey(), pair.getValue().writeNbt(new NbtCompound()));
 		nbt.put(MAPID_CACHE, nbtmap);
 		return nbt;
 	}
