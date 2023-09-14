@@ -15,6 +15,7 @@ import net.minecraft.village.VillagerProfession;
 public class TradeShuffler 
 {
 	private final VillagerEntity villager;
+	private final IVillagerEntityDuck duck;
 	private final boolean depletedOnly;
 
 	private final VillagerProfession job;
@@ -25,6 +26,7 @@ public class TradeShuffler
 	public TradeShuffler(VillagerEntity villager, boolean depletedOnly)
 	{
 		this.villager = villager;
+		this.duck = (IVillagerEntityDuck)villager;
 		this.depletedOnly = depletedOnly;
 
 		this.offers = villager.getOffers();
@@ -39,6 +41,7 @@ public class TradeShuffler
 			return;
 		}
 
+		MapTradesCache.FillCacheFromTrades(duck);
 		for (int jobLevel=0, i=0; i<offers.size(); ++jobLevel)
 		{
 			if (jobPool.size() <= jobLevel){
@@ -78,6 +81,7 @@ public class TradeShuffler
 					++i;
 			}
 		}
+		MapTradesCache.FillCacheFromTrades(duck);
 	}
 
 	@Nullable

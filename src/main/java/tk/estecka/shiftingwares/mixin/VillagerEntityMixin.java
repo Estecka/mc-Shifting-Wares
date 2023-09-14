@@ -1,11 +1,18 @@
 package tk.estecka.shiftingwares.mixin;
 
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.item.FilledMapItem;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
+import tk.estecka.shiftingwares.IVillagerEntityDuck;
+import tk.estecka.shiftingwares.MapTradesCache;
 import tk.estecka.shiftingwares.ShiftingWares;
 import tk.estecka.shiftingwares.TradeShuffler;
-
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,15 +20,37 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(VillagerEntity.class)
-public class VillagerEntityMixin 
+public abstract class VillagerEntityMixin
+implements IVillagerEntityDuck
 {
-	private final VillagerEntity villager = (VillagerEntity)(Object)this;
-
-	private boolean	IsDailyRerollEnabled()   { return villager.getWorld().getGameRules().get(ShiftingWares.DAILY_RULE).get();    }
-	private boolean	IsDepleteRerollEnabled() { return villager.getWorld().getGameRules().get(ShiftingWares.DEPLETED_RULE).get(); }
-
 	static private final TradeOfferList EMPTY = new TradeOfferList();
 
+	private final VillagerEntity villager = (VillagerEntity)(Object)this;
+	private final Map<String,ItemStack> createdMaps = new HashMap<String,ItemStack>();
+
+	private boolean	IsDailyRerollEnabled()   { return villager.getWorld().getGameRules().get(ShiftingWares.DAILY_RULE   ).get(); }
+	private boolean	IsDepleteRerollEnabled() { return villager.getWorld().getGameRules().get(ShiftingWares.DEPLETED_RULE).get(); }
+
+	public Optional<ItemStack>	GetCachedMap(String key){
+		if (this.createdMaps.containsKey(key))
+			return Optional.of(this.createdMaps.get(key));
+		else
+			return Optional.empty();
+	}
+	public void	AddCachedMap(String key, ItemStack mapItem){
+		Integer neoId=FilledMapItem.getMapId(mapItem);
+		if (createdMaps.containsKey(key)){
+			Integer oldId=FilledMapItem.getMapId(createdMaps.get(key));
+			if (!neoId.equals(oldId))
+				ShiftingWares.LOGGER.error("Overwriting a villager's existing map: #{}->#{} @ {}", oldId, neoId, key);
+			else if (ItemStack.areEqual(mapItem, createdMaps.get(key)))
+				ShiftingWares.LOGGER.warn("Updating a villager's existing map#{} @ {}", neoId, key);
+		}
+		else
+			ShiftingWares.LOGGER.info("New map #{} created by {}", neoId, villager);
+
+		createdMaps.put(key, mapItem);
+	}
 
 	/**
 	 * Triggered once a day, regardless of whether the villager needs restocks.
@@ -80,4 +109,18 @@ public class VillagerEntityMixin
 		else
 			return offer.hasBeenUsed();
 	}
+
+
+	@Inject ( method="writeCustomDataToNbt", at=@At("TAIL"))
+	void	WriteCachedMapsToNbt(NbtCompound nbt, CallbackInfo info){
+		MapTradesCache.FillCacheFromTrades(this);
+		MapTradesCache.WriteMapCacheToNbt(nbt, this.createdMaps);
+	}
+
+	@Inject ( method="readCustomDataFromNbt", at=@At("TAIL"))
+	void	ReadCachedMapsFromNbt(NbtCompound nbt, CallbackInfo info){
+		MapTradesCache.ReadMapCacheFromNbt(nbt, this.createdMaps);
+		MapTradesCache.FillCacheFromTrades(this);
+	}
+
 }
