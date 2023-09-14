@@ -3,9 +3,13 @@ package tk.estecka.shiftingwares.mixin;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
+import tk.estecka.shiftingwares.IVillagerEntityDuck;
+import tk.estecka.shiftingwares.MapTradesCache;
 import tk.estecka.shiftingwares.ShiftingWares;
 import tk.estecka.shiftingwares.TradeShuffler;
-
+import java.util.HashMap;
+import java.util.Map;
+import java.util.OptionalInt;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,15 +17,28 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(VillagerEntity.class)
-public class VillagerEntityMixin 
+public abstract class VillagerEntityMixin
+implements IVillagerEntityDuck
 {
 	private final VillagerEntity villager = (VillagerEntity)(Object)this;
+
+	private Map<Integer,Integer> ownedMaps = new HashMap<Integer,Integer>();
 
 	private boolean	IsDailyRerollEnabled()   { return villager.getWorld().getGameRules().get(ShiftingWares.DAILY_RULE).get();    }
 	private boolean	IsDepleteRerollEnabled() { return villager.getWorld().getGameRules().get(ShiftingWares.DEPLETED_RULE).get(); }
 
 	static private final TradeOfferList EMPTY = new TradeOfferList();
 
+	public OptionalInt	GetCachedMapId(int tradeIndex){
+		if (this.ownedMaps.containsKey(tradeIndex))
+			return OptionalInt.of(this.ownedMaps.get(tradeIndex));
+		else
+			return OptionalInt.empty();
+	}
+
+	public void UpdateCachedMaps(){
+		MapTradesCache.FillFromTrades(this.ownedMaps, villager.getOffers());
+	}
 
 	/**
 	 * Triggered once a day, regardless of whether the villager needs restocks.

@@ -10,11 +10,13 @@ import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.village.TradeOffers.Factory;
+import net.minecraft.village.TradeOffers.SellMapFactory;
 import net.minecraft.village.VillagerProfession;
 
 public class TradeShuffler 
 {
 	private final VillagerEntity villager;
+	private final IVillagerEntityDuck duck;
 	private final boolean depletedOnly;
 
 	private final VillagerProfession job;
@@ -25,6 +27,7 @@ public class TradeShuffler
 	public TradeShuffler(VillagerEntity villager, boolean depletedOnly)
 	{
 		this.villager = villager;
+		this.duck = (IVillagerEntityDuck)villager;
 		this.depletedOnly = depletedOnly;
 
 		this.offers = villager.getOffers();
@@ -39,6 +42,7 @@ public class TradeShuffler
 			return;
 		}
 
+		duck.UpdateCachedMaps();
 		for (int jobLevel=0, i=0; i<offers.size(); ++jobLevel)
 		{
 			if (jobPool.size() <= jobLevel){
@@ -67,7 +71,7 @@ public class TradeShuffler
 				continue;
 			}
 
-			var newOffers = DuplicataAwareReroll(levelPool, amount, jobLevel);
+			var newOffers = DuplicataAwareReroll(levelPool, amount, jobLevel, i);
 			for (int n=0; n<2; ++n) {
 				if (shouldReroll[n] && !newOffers.isEmpty()){
 					offers.set(i, newOffers.get(0));
@@ -91,7 +95,7 @@ public class TradeShuffler
 	 * cartographers generating less trades in worlds with no mappable 
 	 * structure.
 	 */
-	private List<TradeOffer>	DuplicataAwareReroll(Factory[] levelPool, int amount, int jobLevel){
+	private List<TradeOffer>	DuplicataAwareReroll(Factory[] levelPool, int amount, int jobLevel, int tradeIndex){
 		var result = new ArrayList<TradeOffer>(2);
 		var randomPool = new ArrayList<Factory>(levelPool.length);
 		for (var f : levelPool)
@@ -104,10 +108,15 @@ public class TradeShuffler
 			}
 			else {
 				int roll = random.nextInt(randomPool.size());
-				TradeOffer offer = randomPool.get(roll).create(villager, random);
+				Factory factory = randomPool.get(roll);
+				TradeOffer offer = (factory instanceof SellMapFactory) ? 
+					((ISellMapFactoryDuck)factory).create(villager, random, tradeIndex) :
+					factory.create(villager, random);
 				randomPool.remove(roll);
-				if (offer != null)
+				if (offer != null){
 					result.add(offer);
+					++tradeIndex;
+				}
 				else
 					ShiftingWares.LOGGER.warn("Failed to generate a valid offer for {} ({}) lvl{}", villager, job, jobLevel);
 			}

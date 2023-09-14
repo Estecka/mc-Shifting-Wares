@@ -3,6 +3,8 @@
 	"package": "tk.estecka.shiftingwares.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
+		"IFilledMapItemMixin",
+		"SellMapFactoryMixin",
 		"VillagerEntityMixin"
 	],
 	"injectors": {
