@@ -1,6 +1,7 @@
 package tk.estecka.shiftingwares.mixin;
 
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import tk.estecka.shiftingwares.IVillagerEntityDuck;
@@ -97,4 +98,18 @@ implements IVillagerEntityDuck
 		else
 			return offer.hasBeenUsed();
 	}
+
+
+	@Inject ( method="writeCustomDataToNbt", at=@At("TAIL"))
+	void	WriteCachedMapsToNbt(NbtCompound nbt, CallbackInfo info){
+		this.UpdateCachedMaps();
+		MapTradesCache.WriteMapToNbt(nbt, this.ownedMaps);
+	}
+
+	@Inject ( method="readCustomDataFromNbt", at=@At("TAIL"))
+	void	ReadCachedMapsFromNbt(NbtCompound nbt, CallbackInfo info){
+		this.ownedMaps = MapTradesCache.ReadMapFromNbt(nbt);
+		this.UpdateCachedMaps();
+	}
+
 }

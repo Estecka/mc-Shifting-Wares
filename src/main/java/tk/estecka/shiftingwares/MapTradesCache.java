@@ -28,20 +28,22 @@ public class MapTradesCache {
 		}
 	}
 
-	static public Map<String,Integer>	ReadMapFromNbt(NbtCompound nbt){
-		var r = new HashMap<String,Integer>();
+	static public Map<Integer,Integer>	ReadMapFromNbt(NbtCompound nbt){
+		var r = new HashMap<Integer,Integer>();
 		var nbtmap = nbt.getCompound(MAPID_CACHE);
 		if (nbtmap == null)
 			return r;
-		for (var tag : nbtmap.getKeys())
-			r.put(tag, nbtmap.getInt(tag));
+		for (var tag : nbtmap.getKeys()){
+			int i = Integer.parseInt(tag);
+			r.put(i, nbtmap.getInt(tag));
+		}
 		return r;
 	}
 
-	static public NbtCompound	WriteMapToNbt(NbtCompound nbt, Map<String,Integer> map){
+	static public NbtCompound	WriteMapToNbt(NbtCompound nbt, Map<Integer,Integer> map){
 		NbtCompound nbtmap = new NbtCompound();
 		for (var pair : map.entrySet())
-			nbtmap.putInt(pair.getKey(), pair.getValue());
+			nbtmap.putInt(pair.getKey().toString(), pair.getValue());
 		nbt.put(MAPID_CACHE, nbtmap);
 		return nbt;
 	}
