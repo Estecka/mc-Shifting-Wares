@@ -25,14 +25,13 @@ public abstract class SellMapFactoryMixin
 	@Shadow @Final private int experience;
 	@Shadow @Final private String nameKey;
 
-	@Inject( method="create", at=@At("HEAD"), cancellable=true)
+	@Inject( method="create", at=@At("HEAD"), cancellable=true )
 	public void	restoreCached(Entity entity, Random random, CallbackInfoReturnable<TradeOffer> info){
 		if (!(entity instanceof VillagerEntity))
 			return;
 
-		final IVillagerEntityDuck villagerDuck = (IVillagerEntityDuck)entity;
+		final var villagerDuck = (IVillagerEntityDuck)entity;
 		var cachedMap = villagerDuck.GetCachedMap(this.nameKey);
-
 		if (cachedMap.isPresent()) {
 			ItemStack stack = cachedMap.get();
 			ShiftingWares.LOGGER.info("Reselling previously available map #{}", FilledMapItem.getMapId(stack));
@@ -41,7 +40,7 @@ public abstract class SellMapFactoryMixin
 	}
 
 	
-	@Inject( method="create", at=@At("RETURN"))
+	@Inject( method="create", at=@At("RETURN") )
 	public void	cacheCreated(Entity entity, Random random, CallbackInfoReturnable<TradeOffer> info){
 		if (!(entity instanceof VillagerEntity))
 			return;

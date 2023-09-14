@@ -70,7 +70,7 @@ public class TradeShuffler
 				continue;
 			}
 
-			var newOffers = DuplicataAwareReroll(levelPool, amount, jobLevel, i);
+			var newOffers = DuplicataAwareReroll(levelPool, amount, jobLevel);
 			for (int n=0; n<2; ++n) {
 				if (shouldReroll[n] && !newOffers.isEmpty()){
 					offers.set(i, newOffers.get(0));
@@ -95,7 +95,7 @@ public class TradeShuffler
 	 * cartographers generating less trades in worlds with no mappable 
 	 * structure.
 	 */
-	private List<TradeOffer>	DuplicataAwareReroll(Factory[] levelPool, int amount, int jobLevel, int tradeIndex){
+	private List<TradeOffer>	DuplicataAwareReroll(Factory[] levelPool, int amount, int jobLevel){
 		var result = new ArrayList<TradeOffer>(2);
 		var randomPool = new ArrayList<Factory>(levelPool.length);
 		for (var f : levelPool)
@@ -108,13 +108,10 @@ public class TradeShuffler
 			}
 			else {
 				int roll = random.nextInt(randomPool.size());
-				Factory factory = randomPool.get(roll);
-				TradeOffer offer = factory.create(villager, random);
+				TradeOffer offer = randomPool.get(roll).create(villager, random);
 				randomPool.remove(roll);
-				if (offer != null){
+				if (offer != null)
 					result.add(offer);
-					++tradeIndex;
-				}
 				else
 					ShiftingWares.LOGGER.warn("Failed to generate a valid offer for {} ({}) lvl{}", villager, job, jobLevel);
 			}

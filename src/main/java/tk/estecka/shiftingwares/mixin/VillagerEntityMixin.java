@@ -23,14 +23,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class VillagerEntityMixin
 implements IVillagerEntityDuck
 {
-	private final VillagerEntity villager = (VillagerEntity)(Object)this;
+	static private final TradeOfferList EMPTY = new TradeOfferList();
 
+	private final VillagerEntity villager = (VillagerEntity)(Object)this;
 	private final Map<String,ItemStack> createdMaps = new HashMap<String,ItemStack>();
 
-	private boolean	IsDailyRerollEnabled()   { return villager.getWorld().getGameRules().get(ShiftingWares.DAILY_RULE).get();    }
+	private boolean	IsDailyRerollEnabled()   { return villager.getWorld().getGameRules().get(ShiftingWares.DAILY_RULE   ).get(); }
 	private boolean	IsDepleteRerollEnabled() { return villager.getWorld().getGameRules().get(ShiftingWares.DEPLETED_RULE).get(); }
-
-	static private final TradeOfferList EMPTY = new TradeOfferList();
 
 	public Optional<ItemStack>	GetCachedMap(String key){
 		if (this.createdMaps.containsKey(key))

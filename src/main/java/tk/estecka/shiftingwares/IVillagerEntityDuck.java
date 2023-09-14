@@ -6,8 +6,8 @@ import net.minecraft.village.TradeOfferList;
 
 public interface IVillagerEntityDuck 
 {
+	TradeOfferList	getOffers();
+
 	Optional<ItemStack>	GetCachedMap(String key);
 	void	AddCachedMap(String key, ItemStack mapItem);
-
-	TradeOfferList	getOffers();
 }
