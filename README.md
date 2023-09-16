@@ -22,8 +22,3 @@ Disabling all rules effectively disables the mod.
 
 - **Cartographers are excluded from generating more different maps than they would in vanilla.** Maps they create are never forgotten by the game, and lock their structures from appearing on other maps. This would cause issues with Daily Rerolls, as cartographers would generate a lot of maps that would never be sold.   
 If you don't use Daily Rerolls and wish to let them generate new maps, you can roll-back to version 1.0.1 of the mod for now.
-
-## Known issues
-
-- **When a cartographer re-rolls depleted trades in a world set to generate with no structures**, they may have trouble generating their highest level trades. In particular, it is impossible for them to yield a Master level trade, unless they reroll several specific trade slots at once.  
-*High-level trades are never definitely lost.* They will still reappear eventually. Daily rerolls in particular, are guaranteed to yield the appropriate trades, and erase any oddities.
