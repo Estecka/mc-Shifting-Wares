@@ -1,6 +1,7 @@
 package tk.estecka.shiftingwares;
 
 import java.util.Map;
+import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -13,7 +14,8 @@ public class MapTradesCache
 {
 	static public final String MAPID_CACHE = "shifting-wares:created_maps";
 
-	static public void	FillCacheFromTrades(IVillagerEntityDuck villager){
+	static public void	FillCacheFromTrades(VillagerEntity villager){
+		IVillagerEntityDuck villagerMixin = (IVillagerEntityDuck)villager;
 		TradeOfferList offers = villager.getOffers();
 		for (int i=0; i<offers.size(); ++i)
 		{
@@ -35,10 +37,10 @@ public class MapTradesCache
 				nameKey = sellItem.getName().getString();
 			}
 
-			var oldItem = villager.GetCachedMap(nameKey);
+			var oldItem = villagerMixin.GetCachedMap(nameKey);
 			if (oldItem.isEmpty() || !ItemStack.areEqual(sellItem, oldItem.get())){
-				ShiftingWares.LOGGER.warn("Caught a map trade that wasn't properly cached: #{} @ {}", FilledMapItem.getMapId(sellItem), villager);
-				villager.AddCachedMap(nameKey, sellItem);
+				ShiftingWares.LOGGER.warn("Caught a map trade that wasn't properly cached: #{} @ {}", FilledMapItem.getMapId(sellItem), villagerMixin);
+				villagerMixin.AddCachedMap(nameKey, sellItem);
 			}
 		}
 	}

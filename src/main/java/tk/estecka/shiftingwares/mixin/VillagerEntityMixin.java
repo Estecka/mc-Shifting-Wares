@@ -115,14 +115,14 @@ implements IVillagerEntityDuck
 
 	@Inject ( method="writeCustomDataToNbt", at=@At("TAIL"))
 	void	WriteCachedMapsToNbt(NbtCompound nbt, CallbackInfo info){
-		MapTradesCache.FillCacheFromTrades(this);
+		MapTradesCache.FillCacheFromTrades(villager);
 		MapTradesCache.WriteMapCacheToNbt(nbt, this.createdMaps);
 	}
 
 	@Inject ( method="readCustomDataFromNbt", at=@At("TAIL"))
 	void	ReadCachedMapsFromNbt(NbtCompound nbt, CallbackInfo info){
 		MapTradesCache.ReadMapCacheFromNbt(nbt, this.createdMaps);
-		MapTradesCache.FillCacheFromTrades(this);
+		MapTradesCache.FillCacheFromTrades(villager);
 	}
 
 }
