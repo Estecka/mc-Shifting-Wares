@@ -22,3 +22,7 @@ Disabling all rules effectively disables the mod.
 
 - **Cartographers are excluded from generating more different maps than they would in vanilla.** Maps they create are never forgotten by the game, and lock their structures from appearing on other maps. This would cause issues with Daily Rerolls, as cartographers would generate a lot of maps that would never be sold.   
 If you don't use Daily Rerolls and wish to let them generate new maps, you can roll-back to version 1.0.1 of the mod for now.
+
+## Technical details
+
+This mod runs with the assumption that villagers have 2 trades per level, and 1 master trade. It will always try to enforce this layout when rerolling. If a villagers is unable to yield enough trades for a given level, (e.g: Explorer Map trades in worlds with no structure), their trade list will be padded with empty trades in order to enforce the layout.
