@@ -105,7 +105,9 @@ implements IVillagerEntityDuck
 	@Redirect( method="needsRestock", at=@At(value="INVOKE", target="net/minecraft/village/TradeOffer.hasBeenUsed ()Z") )
 	private boolean RestockDepletedOnly(TradeOffer offer){
 		if (IsDepleteRerollEnabled())
-			return offer.isDisabled();
+			// Also excludes placeholder from triggering restocks. Those will be
+			// disabled, but not used.
+			return offer.hasBeenUsed() && offer.isDisabled();
 		else
 			return offer.hasBeenUsed();
 	}

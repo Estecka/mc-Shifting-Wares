@@ -48,21 +48,13 @@ public class TradeShuffler
 		for (int tradeLvl=VillagerData.MIN_LEVEL; tradeLvl<=jobLevel; ++tradeLvl)
 		{
 			final int levelSize = (tradeLvl<VillagerData.MAX_LEVEL) ? 2 : 1;
-			Factory[] levelPool = jobPool.get(tradeLvl);
-			if (levelPool == null) {
-				ShiftingWares.LOGGER.error("No trade pool for job {} lvl.{}", job, jobLevel);
-				levelPool = new Factory[0];
-			}
-			else if (levelPool.length < levelSize) {
-				ShiftingWares.LOGGER.error("Trade pool smaller than expected for job {} lvl.{}", job, jobLevel);
-			}
 
 			final TradeOffer[] rerollMap = new TradeOffer[levelSize];
 			for (int n=0; n<levelSize; ++n)
-				if (CanReroll(tradeIndex+n))
+				if (shouldReroll(tradeIndex+n))
 					rerollMap[n] = ShiftingWares.PLACEHOLDER_TRADE;
 
-			DuplicataAwareReroll(levelPool, rerollMap);
+			DuplicataAwareReroll(tradeLvl, rerollMap);
 
 			for (int n=0; n<levelSize; ++n, ++tradeIndex) {
 				while (offers.size() <= tradeIndex)
@@ -74,7 +66,7 @@ public class TradeShuffler
 		MapTradesCache.FillCacheFromTrades(duck);
 	}
 
-	public boolean	CanReroll(int tradeIndex){
+	public boolean	shouldReroll(int tradeIndex){
 		return !depletedOnly 
 		    || offers.size() <= tradeIndex
 		    || offers.get(tradeIndex).isDisabled()
@@ -84,7 +76,16 @@ public class TradeShuffler
 	/**
 	 * @param rerollMap	Will attempt to reroll every non-null entry.
 	 */
-	private TradeOffer[]	DuplicataAwareReroll(Factory[] levelPool, TradeOffer[] rerollMap){
+	private TradeOffer[]	DuplicataAwareReroll(int tradeLvl, TradeOffer[] rerollMap){
+		Factory[] levelPool = jobPool.get(tradeLvl);
+		if (levelPool == null) {
+			ShiftingWares.LOGGER.error("No trade pool for job {} lvl.{}", job, jobLevel);
+			return rerollMap;
+		}
+		else if (levelPool.length < rerollMap.length) {
+			ShiftingWares.LOGGER.error("Trade pool smaller than expected for job {} lvl.{}", job, jobLevel);
+		}
+
 		var randomPool = new ArrayList<Factory>(levelPool.length);
 		for (var f : levelPool)
 			randomPool.add(f);
@@ -99,7 +100,7 @@ public class TradeShuffler
 				randomPool.remove(roll);
 			}
 			if (offer == null)
-				ShiftingWares.LOGGER.warn("Failed to generate a valid offer for {} ({})", job, villager);
+				ShiftingWares.LOGGER.warn("Failed to generate a valid offer for {} lvl.{} ({})", job, tradeLvl, villager);
 			else
 				rerollMap[n] = offer;
 		}
