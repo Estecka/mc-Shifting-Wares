@@ -89,14 +89,17 @@ public class TradeShuffler
 		for (var f : levelPool)
 			randomPool.add(f);
 
-		for (int n=0; n<rerollMap.length && !randomPool.isEmpty(); ++n) 
+		for (int n=0; n<rerollMap.length; ++n) 
 		if  (rerollMap[n] != null)
 		{
-			int roll = random.nextInt(randomPool.size());
-			TradeOffer offer = randomPool.get(roll).create(villager, random);
-			randomPool.remove(roll);
+			TradeOffer offer = null;
+			while (offer == null && !randomPool.isEmpty()) {
+				int roll = random.nextInt(randomPool.size());
+				offer = randomPool.get(roll).create(villager, random);
+				randomPool.remove(roll);
+			}
 			if (offer == null)
-				ShiftingWares.LOGGER.warn("Failed to generate a valid offer for {} lvl.{} ({})", job, jobLevel, villager);
+				ShiftingWares.LOGGER.warn("Failed to generate a valid offer for {} ({})", job, villager);
 			else
 				rerollMap[n] = offer;
 		}
