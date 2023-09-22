@@ -2,6 +2,8 @@ package tk.estecka.shiftingwares;
 
 import java.util.ArrayList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
@@ -42,25 +44,26 @@ public class TradeShuffler
 		}
 
 		MapTradesCache.FillCacheFromTrades(villager);
-		int tradeIndex = 0;
-		for (int tradeLvl=VillagerData.MIN_LEVEL; tradeLvl<=jobLevel; ++tradeLvl)
-		{
-			final int levelSize = (tradeLvl<VillagerData.MAX_LEVEL) ? 2 : 1;
 
-			final TradeOffer[] rerollMap = new TradeOffer[levelSize];
-			for (int n=0; n<levelSize; ++n)
-				if (shouldReroll(tradeIndex+n))
-					rerollMap[n] = ShiftingWares.PLACEHOLDER_TRADE;
-
-			DuplicataAwareReroll(tradeLvl, rerollMap);
-
-			for (int n=0; n<levelSize; ++n, ++tradeIndex) {
-				while (offers.size() <= tradeIndex)
-					offers.add(ShiftingWares.PLACEHOLDER_TRADE);
-				if (rerollMap[n] != null)
-					offers.set(tradeIndex, rerollMap[n]);
-			}
+		IntList slotLevels = new IntArrayList();
+		for (int lvl=VillagerData.MIN_LEVEL; lvl<=this.jobLevel; ++lvl)
+		if (jobPool.containsKey(lvl)){
+			var pool = jobPool.get(lvl);
+			if (pool == null)
+				ShiftingWares.LOGGER.error("Missing pool for job {} lvl.{}", job, jobLevel);
+			else for (int i=0; i<2 && i<pool.length; ++i)
+				slotLevels.add(lvl);
 		}
+
+		for (int i=offers.size()-1; slotLevels.size()<=i; --i)
+			if (shouldReroll(i))
+				offers.remove(i);
+		while(offers.size() < slotLevels.size())
+			offers.add(ShiftingWares.PLACEHOLDER_TRADE);
+
+		for (int tradeLvl=VillagerData.MIN_LEVEL; tradeLvl<=jobLevel; ++tradeLvl)
+			DuplicataAwareReroll(tradeLvl, slotLevels);
+
 		MapTradesCache.FillCacheFromTrades(villager);
 	}
 
@@ -71,38 +74,32 @@ public class TradeShuffler
 		    ;
 	}
 
-	/**
-	 * @param rerollMap	Will attempt to reroll every non-null entry.
-	 */
-	private TradeOffer[]	DuplicataAwareReroll(int tradeLvl, TradeOffer[] rerollMap){
+	private void	DuplicataAwareReroll(int tradeLvl, IntList slotLevels){
 		Factory[] levelPool = jobPool.get(tradeLvl);
-		if (levelPool == null) {
-			ShiftingWares.LOGGER.error("No trade pool for job {} lvl.{}", job, jobLevel);
-			return rerollMap;
-		}
-		else if (levelPool.length < rerollMap.length) {
-			ShiftingWares.LOGGER.error("Trade pool smaller than expected for job {} lvl.{}", job, jobLevel);
-		}
+		boolean missingSome = false;
 
 		var randomPool = new ArrayList<Factory>(levelPool.length);
 		for (var f : levelPool)
 			randomPool.add(f);
 
-		for (int n=0; n<rerollMap.length; ++n) 
-		if  (rerollMap[n] != null)
-		{
+		for (int i=0; i<offers.size(); ++i) 
+		if (tradeLvl==slotLevels.getInt(i) && shouldReroll(i)) {
 			TradeOffer offer = null;
 			while (offer == null && !randomPool.isEmpty()) {
 				int roll = random.nextInt(randomPool.size());
 				offer = randomPool.get(roll).create(villager, random);
 				randomPool.remove(roll);
 			}
-			if (offer == null)
-				ShiftingWares.LOGGER.warn("Failed to generate a valid offer for {} lvl.{} ({})", job, tradeLvl, villager);
-			else
-				rerollMap[n] = offer;
+			if (offer == null){
+				offer = ShiftingWares.PLACEHOLDER_TRADE;
+				missingSome = true;
+			}
+
+			offers.set(i, offer);
 		}
-		return rerollMap;
+
+		if (missingSome)
+			ShiftingWares.LOGGER.warn("Failed to generate some trade offers for {} lvl.{} ({})", job, tradeLvl, villager);
 	}
 
 }
