@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
@@ -33,8 +34,12 @@ public class TradeShuffler
 		this.offers = villager.getOffers();
 		this.job = villager.getVillagerData().getProfession();
 		this.jobLevel = villager.getVillagerData().getLevel();
-		this.jobPool = TradeOffers.PROFESSION_TO_LEVELED_TRADE.get(job);
 		this.random = villager.getRandom();
+
+		if ( villager.getWorld().getEnabledFeatures().contains(FeatureFlags.TRADE_REBALANCE) && TradeOffers.REBALANCED_PROFESSION_TO_LEVELED_TRADE.containsKey(job) )
+			this.jobPool = TradeOffers.REBALANCED_PROFESSION_TO_LEVELED_TRADE.get(job);
+		else
+			this.jobPool = TradeOffers.PROFESSION_TO_LEVELED_TRADE.get(job);
 	}
 
 	public void	Reroll(){
