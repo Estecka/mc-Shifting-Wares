@@ -28,7 +28,7 @@ implements IRerollBlueprint
 		{
 			var pool = jobPool.get(lvl);
 			if (pool == null)
-				ShiftingWares.LOGGER.error("Missing pool for job {} lvl.{}", job, jobLevel);
+				ShiftingWares.LOGGER.error("Missing pool for job {} lvl.{}", job, lvl);
 			else for (int i=0; i<2 && i<pool.length; ++i)
 				slotLevels.add(lvl);
 		}
