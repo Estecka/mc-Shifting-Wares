@@ -10,7 +10,7 @@ import tk.estecka.shiftingwares.IVillagerEntityDuck;
 import tk.estecka.shiftingwares.MapTradesCache;
 import tk.estecka.shiftingwares.ShiftingWares;
 import tk.estecka.shiftingwares.TradeShuffler;
-import tk.estecka.shiftingwares.VanillishRerollBlueprint;
+import tk.estecka.shiftingwares.VanillaTradeLayout;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -25,7 +25,7 @@ public abstract class VillagerEntityMixin
 implements IVillagerEntityDuck
 {
 	static private final TradeOfferList EMPTY = new TradeOfferList();
-	static private final VanillishRerollBlueprint VANILLA_REROLL_LAYOUT = new VanillishRerollBlueprint();
+	static private final VanillaTradeLayout VANILLA_REROLL_LAYOUT = new VanillaTradeLayout();
 
 	private final VillagerEntity villager = (VillagerEntity)(Object)this;
 	private final Map<String,ItemStack> createdMaps = new HashMap<String,ItemStack>();

@@ -1,10 +1,8 @@
 package tk.estecka.shiftingwares;
 
 import java.util.ArrayList;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.IntArraySet;
-import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import java.util.IdentityHashMap;
+import java.util.List;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
@@ -18,50 +16,41 @@ public class TradeShuffler
 	private final boolean depletedOnly;
 
 	private final VillagerProfession job;
-	private final int jobLevel;
 
 	private final Random random;
 	private final TradeOfferList offers;
-	private final Int2ObjectMap<Factory[]> jobPool;
-	private final IntList slotLevels;
+	private final Factory[][] tradeLayout;
 
-	public TradeShuffler(VillagerEntity villager, IRerollBlueprint layout, boolean depletedOnly)
+	public TradeShuffler(VillagerEntity villager, ITradeLayoutProvider layout, boolean depletedOnly)
 	{
 		this.villager = villager;
 		this.depletedOnly = depletedOnly;
 
 		this.offers = villager.getOffers();
 		this.job = villager.getVillagerData().getProfession();
-		this.jobLevel = villager.getVillagerData().getLevel();
 		this.random = villager.getRandom();
 
-		this.slotLevels = layout.GetSlotLevels(villager);
-		this.jobPool = layout.GetTradePools(villager);
+		this.tradeLayout = layout.GetTradeLayout(villager);
 	}
 
 	public void	Reroll(){
-		if (jobPool == null || slotLevels == null){
+		if (tradeLayout == null){
 			ShiftingWares.LOGGER.error("Missing layout, villager will not be rerolled: {} ({})", job, villager);
 			return;
 		}
 
 		MapTradesCache.FillCacheFromTrades(villager);
 
-		// Trim extraneous trades
-		for (int i=offers.size()-1; slotLevels.size()<=i; --i)
+		// Trim superfluous trades
+		for (int i=offers.size()-1; tradeLayout.length<=i; --i)
 			if (shouldReroll(i))
 				offers.remove(i);
 
 		// Reserve space for new trades
-		while(offers.size() < slotLevels.size())
+		while(offers.size() < tradeLayout.length)
 			offers.add(ShiftingWares.PLACEHOLDER_TRADE);
 
-		IntSet checklist = new IntArraySet();
-		for (int lvl : slotLevels)
-		if (!checklist.contains(lvl)) {
-			checklist.add(lvl);
-			DuplicataAwareReroll(lvl);
-		}
+		DuplicataAwareReroll();
 
 		MapTradesCache.FillCacheFromTrades(villager);
 	}
@@ -73,31 +62,41 @@ public class TradeShuffler
 		    ;
 	}
 
-	/**
-	 * Rerolls all slots  that use the same trade pool, without ever reusing the
-	 * same factory twice.
-	 */
-	private void	DuplicataAwareReroll(int tradeLvl){
-		Factory[] levelPool = jobPool.get(tradeLvl);
-		boolean missingSome = false;
+	List<Factory>[] MutableCopy(Factory[][] layout){
+		IdentityHashMap<Factory[], ArrayList<Factory>> mutablePools = new IdentityHashMap<>();
+		mutablePools.put(null, new ArrayList<>(0));
 
-		if (levelPool == null){
-			ShiftingWares.LOGGER.error("A trade pool was declared, but could not be found: {} lvl.{} @ {}", job, tradeLvl, villager);
-			return;
+		for (var pool : layout)
+		if (!mutablePools.containsKey(pool))
+		{
+			var mpool = new ArrayList<Factory>(pool.length);
+			for (var f : pool)
+				mpool.add(f);
+			mutablePools.put(pool, mpool);
 		}
 
-		var randomPool = new ArrayList<Factory>(levelPool.length);
-		for (var f : levelPool)
-			randomPool.add(f);
+		@SuppressWarnings("unchecked")
+		List<Factory>[] workspace = new List[layout.length];
+		for (int i=0; i<workspace.length; ++i)
+			workspace[i] = mutablePools.get(layout[i]);
+
+		return workspace;
+	}
+
+	private void	DuplicataAwareReroll(){
+		List<Factory>[] mutableLayout = MutableCopy(this.tradeLayout);
+		boolean missingSome = false;
 
 		for (int i=0; i<offers.size(); ++i) 
-		if (tradeLvl == slotLevels.getInt(i) && shouldReroll(i))
+		if (shouldReroll(i))
 		{
+			var pool = mutableLayout[i];
 			TradeOffer offer = null;
-			while (offer == null && !randomPool.isEmpty()) {
-				int roll = random.nextInt(randomPool.size());
-				offer = randomPool.get(roll).create(villager, random);
-				randomPool.remove(roll);
+
+			while (offer == null && !pool.isEmpty()) {
+				int roll = random.nextInt(pool.size());
+				offer = pool.get(roll).create(villager, random);
+				pool.remove(roll);
 			}
 			if (offer == null){
 				offer = ShiftingWares.PLACEHOLDER_TRADE;
@@ -108,7 +107,7 @@ public class TradeShuffler
 		}
 
 		if (missingSome)
-			ShiftingWares.LOGGER.warn("Failed to generate some trade offers for {} lvl.{} ({})", job, tradeLvl, villager);
+			ShiftingWares.LOGGER.warn("Failed to generate some trade offers for job {} ({})", job, villager);
 	}
 
 }
