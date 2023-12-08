@@ -14,6 +14,8 @@ import tk.estecka.shiftingwares.ShiftingWares;
 public class VillagerConfigTradeLayout
 implements ITradeLayoutProvider
 {
+	private static final VanillaTradeLayout vanilla = new VanillaTradeLayout();
+
 	public List<Factory[]>	GetTradeLayout(VillagerEntity villager){
 		List<Factory[]> layout = new ArrayList<>();
 		VillagerProfession job = villager.getVillagerData().getProfession();
@@ -21,8 +23,8 @@ implements ITradeLayoutProvider
 		TradeTable table = VillagerConfig.TRADE_MANAGER.getTrade(Registries.VILLAGER_PROFESSION.getId(job));
 
 		if (table == null){
-			ShiftingWares.LOGGER.error("No trade table for job {}.", job);
-			return null;
+			ShiftingWares.LOGGER.warn("Falling back to vanilla {}", job);
+			return vanilla.GetTradeLayout(villager);
 		}
 
 		for (int lvl=VillagerData.MIN_LEVEL; lvl<=jobLevel; ++lvl)
