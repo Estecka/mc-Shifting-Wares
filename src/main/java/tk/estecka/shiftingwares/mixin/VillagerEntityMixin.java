@@ -10,6 +10,7 @@ import tk.estecka.shiftingwares.IVillagerEntityDuck;
 import tk.estecka.shiftingwares.MapTradesCache;
 import tk.estecka.shiftingwares.ShiftingWares;
 import tk.estecka.shiftingwares.TradeShuffler;
+import tk.estecka.shiftingwares.VanillaTradeLayout;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -24,6 +25,7 @@ public abstract class VillagerEntityMixin
 implements IVillagerEntityDuck
 {
 	static private final TradeOfferList EMPTY = new TradeOfferList();
+	static private final VanillaTradeLayout VANILLA_REROLL_LAYOUT = new VanillaTradeLayout();
 
 	private final VillagerEntity villager = (VillagerEntity)(Object)this;
 	private final Map<String,ItemStack> createdMaps = new HashMap<String,ItemStack>();
@@ -59,11 +61,11 @@ implements IVillagerEntityDuck
 	private void DailyReroll(CallbackInfo info) {
 		if (IsDailyRerollEnabled()){
 			ShiftingWares.LOGGER.info("A villager has restocked all their trades.");
-			new TradeShuffler(villager, false).Reroll();
+			new TradeShuffler(villager, VANILLA_REROLL_LAYOUT, false).Reroll();
 		}
 		else if (IsDepleteRerollEnabled()){
 			ShiftingWares.LOGGER.info("A villager has restocked some trades.");
-			new TradeShuffler(villager, true).Reroll();
+			new TradeShuffler(villager, VANILLA_REROLL_LAYOUT, true).Reroll();
 		}
 	}
 	/**
@@ -88,7 +90,7 @@ implements IVillagerEntityDuck
 	private TradeOfferList RestockReroll(VillagerEntity me) {
 		if (IsDepleteRerollEnabled()){
 			ShiftingWares.LOGGER.info("A villager has restocked some trades.");
-			new TradeShuffler(villager, true).Reroll();
+			new TradeShuffler(villager, VANILLA_REROLL_LAYOUT, true).Reroll();
 			return EMPTY;
 		}
 		else
