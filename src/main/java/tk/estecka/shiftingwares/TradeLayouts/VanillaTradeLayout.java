@@ -1,4 +1,4 @@
-package tk.estecka.shiftingwares;
+package tk.estecka.shiftingwares.TradeLayouts;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,11 +8,12 @@ import net.minecraft.village.TradeOffers;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.TradeOffers.Factory;
+import tk.estecka.shiftingwares.ShiftingWares;
 
 public class VanillaTradeLayout
 implements ITradeLayoutProvider
 {
-	public Factory[][]	GetTradeLayout(VillagerEntity villager){
+	public List<Factory[]>	GetTradeLayout(VillagerEntity villager){
 		List<Factory[]> layout = new ArrayList<>();
 		VillagerProfession job = villager.getVillagerData().getProfession();
 		int jobLevel = villager.getVillagerData().getLevel();
@@ -32,7 +33,7 @@ implements ITradeLayoutProvider
 				layout.add(pool);
 		}
 
-		return layout.toArray(new Factory[0][]);
+		return layout;
 	}
 
 }

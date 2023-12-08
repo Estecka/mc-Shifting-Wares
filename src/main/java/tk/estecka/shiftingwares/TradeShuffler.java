@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
@@ -20,20 +19,18 @@ public class TradeShuffler
 
 	private final Random random;
 	private final TradeOfferList offers;
-	private final Factory[][] tradeLayout;
+	private final List<Factory[]> tradeLayout;
 
-	public TradeShuffler(VillagerEntity villager, ITradeLayoutProvider layout, boolean depletedOnly)
+	public TradeShuffler(VillagerEntity villager, boolean depletedOnly)
 	{
 		this.villager = villager;
 		this.depletedOnly = depletedOnly;
 
 		this.offers = villager.getOffers();
 		this.job = villager.getVillagerData().getProfession();
-		this.jobLevel = villager.getVillagerData().getLevel();
-		this.jobPool = TradeOffers.PROFESSION_TO_LEVELED_TRADE.get(job);
 		this.random = villager.getRandom();
 
-		this.tradeLayout = layout.GetTradeLayout(villager);
+		this.tradeLayout = ShiftingWares.TRADE_LAYOUT_PROVIDER.GetTradeLayout(villager);
 	}
 
 	public void	Reroll(){
@@ -45,12 +42,12 @@ public class TradeShuffler
 		MapTradesCache.FillCacheFromTrades(villager);
 
 		// Trim superfluous trades
-		for (int i=offers.size()-1; tradeLayout.length<=i; --i)
+		for (int i=offers.size()-1; tradeLayout.size()<=i; --i)
 			if (shouldReroll(i))
 				offers.remove(i);
 
 		// Reserve space for new trades
-		while(offers.size() < tradeLayout.length)
+		while(offers.size() < tradeLayout.size())
 			offers.add(ShiftingWares.PLACEHOLDER_TRADE);
 
 		DuplicataAwareReroll();
@@ -65,7 +62,7 @@ public class TradeShuffler
 		    ;
 	}
 
-	List<Factory>[] MutableCopy(Factory[][] layout){
+	List<Factory>[] MutableCopy(List<Factory[]> layout){
 		IdentityHashMap<Factory[], ArrayList<Factory>> mutablePools = new IdentityHashMap<>();
 		mutablePools.put(null, new ArrayList<>(0));
 
@@ -79,9 +76,9 @@ public class TradeShuffler
 		}
 
 		@SuppressWarnings("unchecked")
-		List<Factory>[] workspace = new List[layout.length];
+		List<Factory>[] workspace = new List[layout.size()];
 		for (int i=0; i<workspace.length; ++i)
-			workspace[i] = mutablePools.get(layout[i]);
+			workspace[i] = mutablePools.get(layout.get(i));
 
 		return workspace;
 	}

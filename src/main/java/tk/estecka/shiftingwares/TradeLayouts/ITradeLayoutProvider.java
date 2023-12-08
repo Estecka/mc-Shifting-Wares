@@ -1,5 +1,6 @@
-package tk.estecka.shiftingwares;
+package tk.estecka.shiftingwares.TradeLayouts;
 
+import java.util.List;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.village.TradeOffers.Factory;
 
@@ -21,5 +22,5 @@ public interface ITradeLayoutProvider
 	 * duplicate trades  across  the slots  of  a same  group. Pool equality  is
 	 * evaluated by identity, i.e by comparing pointers.
 	 */
-	Factory[][]	GetTradeLayout(VillagerEntity villager);
+	List<Factory[]>	GetTradeLayout(VillagerEntity villager);
 }
