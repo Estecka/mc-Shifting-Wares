@@ -1,18 +1,22 @@
 package tk.estecka.shiftingwares;
 
+import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.TextContent;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.village.TradeOfferList;
+import net.minecraft.world.gen.structure.Structure;
 
 public class MapTradesCache 
 {
 	static public final String MAPID_CACHE = "shifting-wares:created_maps";
+	static public final Map<String, TagKey<Structure>> NAME_TO_STRUCT = new HashMap<>();
 
 	static public void	FillCacheFromTrades(VillagerEntity villager){
 		IVillagerEntityDuck villagerMixin = (IVillagerEntityDuck)villager;
@@ -37,6 +41,11 @@ public class MapTradesCache
 				nameKey = sellItem.getName().getString();
 			}
 
+			if (NAME_TO_STRUCT.containsKey(nameKey))
+				nameKey = NAME_TO_STRUCT.get(nameKey).id().toString();
+			else
+				ShiftingWares.LOGGER.error("Unable to identify map name: {}", nameKey);
+
 			var oldItem = villagerMixin.GetCachedMap(nameKey);
 			if (oldItem.isEmpty() || !ItemStack.areEqual(sellItem, oldItem.get())){
 				ShiftingWares.LOGGER.warn("Caught a map trade that wasn't properly cached: #{} @ {}", FilledMapItem.getMapId(sellItem), villagerMixin);
@@ -50,8 +59,13 @@ public class MapTradesCache
 		if (nbtmap == null)
 			return map;
 
-		for (String key : nbtmap.getKeys())
+		for (String key : nbtmap.getKeys()){
+			if (NAME_TO_STRUCT.containsKey(key)){
+				ShiftingWares.LOGGER.info("Converted an old cached map ({})", key);
+				key = NAME_TO_STRUCT.get(key).id().toString();
+			}
 			map.put(key, ItemStack.fromNbt(nbtmap.getCompound(key)));
+		}
 		return map;
 	}
 
