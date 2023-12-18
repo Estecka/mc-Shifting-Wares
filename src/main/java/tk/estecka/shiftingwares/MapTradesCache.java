@@ -65,11 +65,12 @@ public class MapTradesCache
 			return map;
 
 		for (String key : nbtmap.getKeys()){
+			ItemStack item = ItemStack.fromNbt(nbtmap.getCompound(key));
 			if (NAME_TO_STRUCT.containsKey(key)){
 				ShiftingWares.LOGGER.info("Converted an old cached map ({})", key);
 				key = NAME_TO_STRUCT.get(key).id().toString();
 			}
-			map.put(key, ItemStack.fromNbt(nbtmap.getCompound(key)));
+			map.put(key, item);
 		}
 		return map;
 	}
