@@ -14,11 +14,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
+@Unique
 @Mixin(VillagerEntity.class)
 public abstract class VillagerEntityMixin
 implements IVillagerEntityDuck
@@ -31,13 +34,13 @@ implements IVillagerEntityDuck
 	private boolean	IsDailyRerollEnabled()   { return villager.getWorld().getGameRules().get(ShiftingWares.DAILY_RULE   ).get(); }
 	private boolean	IsDepleteRerollEnabled() { return villager.getWorld().getGameRules().get(ShiftingWares.DEPLETED_RULE).get(); }
 
-	public Optional<ItemStack>	GetCachedMap(String key){
+	public Optional<ItemStack>	shiftingwares$GetCachedMap(String key){
 		if (this.createdMaps.containsKey(key))
 			return Optional.of(this.createdMaps.get(key));
 		else
 			return Optional.empty();
 	}
-	public void	AddCachedMap(String key, ItemStack mapItem){
+	public void	shiftingwares$AddCachedMap(String key, ItemStack mapItem){
 		Integer neoId=FilledMapItem.getMapId(mapItem);
 		if (createdMaps.containsKey(key)){
 			Integer oldId=FilledMapItem.getMapId(createdMaps.get(key));
@@ -68,48 +71,45 @@ implements IVillagerEntityDuck
 	}
 	/**
 	 * This redirects the `for` loop that would normally refill all trades.
+	 * Daily refills are never needed  due to all trades being outright replaced
+	 * when refills are allowed.
 	 */
-	@Redirect( method="restockAndUpdateDemandBonus", at=@At(value="INVOKE", target="net/minecraft/entity/passive/VillagerEntity.getOffers ()Lnet/minecraft/village/TradeOfferList;") )
-	private TradeOfferList DailyRefill(VillagerEntity me) {
-		if (IsDailyRerollEnabled())
-			return EMPTY;
-		else if (IsDepleteRerollEnabled())
+	@WrapOperation( method="restockAndUpdateDemandBonus", at=@At(value="INVOKE", target="net/minecraft/entity/passive/VillagerEntity.getOffers ()Lnet/minecraft/village/TradeOfferList;") )
+	private TradeOfferList DailyRefill(VillagerEntity me, Operation<TradeOfferList> original) {
+		if (IsDailyRerollEnabled() || IsDepleteRerollEnabled())
 			return EMPTY;
 		else
-			return villager.getOffers();
+			return original.call();
 	}
 
 	/**
-	 * Triggered whenever the villager decides to restock due to low stocks. 
+	 * Triggered whenever the villager decides to restock due to low stocks.
 	 * (Excluding the daily restock.)
 	 * This also redirects the `for` loop that would normally refill all trades.
 	 */
-	@Redirect( method="restock", at=@At(value="INVOKE", target="net/minecraft/entity/passive/VillagerEntity.getOffers ()Lnet/minecraft/village/TradeOfferList;") )
-	private TradeOfferList RestockReroll(VillagerEntity me) {
+	@WrapOperation( method="restock", at=@At(value="INVOKE", target="net/minecraft/entity/passive/VillagerEntity.getOffers ()Lnet/minecraft/village/TradeOfferList;") )
+	private TradeOfferList RestockReroll(VillagerEntity me, Operation<TradeOfferList> original) {
 		if (IsDepleteRerollEnabled()){
 			ShiftingWares.LOGGER.info("A villager has restocked some trades.");
 			new TradeShuffler(villager, true).Reroll();
 			return EMPTY;
 		}
 		else
-			return villager.getOffers();
+			return original.call();
 	}
 
 	/**
-	 * Prevents restocks from being triggered by partially used trades, so that
+	 * Prevents restocks from being triggered  by partially used trades, so that
 	 * only fully depleted trades may trigger restocks.
 	 * This does not prevent partially used trades  from being refilled whenever
-	 * a restock occurs,  but this does prevent  restocks from  being needlessly
-	 * spent.
+	 * a restock does occurs, this only prevents restocks from being wasted.
+	 * 
+	 * @implNote Placeholder trades can never be "used" so they will never 
+	 * trigger restocks despite being "disabled".
 	 */
-	@Redirect( method="needsRestock", at=@At(value="INVOKE", target="net/minecraft/village/TradeOffer.hasBeenUsed ()Z") )
-	private boolean RestockDepletedOnly(TradeOffer offer){
-		if (IsDepleteRerollEnabled())
-			// Also excludes placeholder from triggering restocks. Those will be
-			// disabled, but not used.
-			return offer.hasBeenUsed() && offer.isDisabled();
-		else
-			return offer.hasBeenUsed();
+	@WrapOperation( method="needsRestock", at=@At(value="INVOKE", target="net/minecraft/village/TradeOffer.hasBeenUsed ()Z") )
+	private boolean RestockDepletedOnly(TradeOffer offer, Operation<Boolean> hasBeenUsed){
+		return hasBeenUsed.call(offer) && (offer.isDisabled() || !IsDepleteRerollEnabled());
 	}
 
 

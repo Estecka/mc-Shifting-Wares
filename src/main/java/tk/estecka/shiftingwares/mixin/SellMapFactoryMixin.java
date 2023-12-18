@@ -44,7 +44,7 @@ public abstract class SellMapFactoryMixin
 			return;
 
 		final var villagerDuck = (IVillagerEntityDuck)entity;
-		var cachedMap = villagerDuck.GetCachedMap(this.structure.id().toString());
+		var cachedMap = villagerDuck.shiftingwares$GetCachedMap(this.structure.id().toString());
 		if (cachedMap.isPresent()) {
 			ItemStack stack = cachedMap.get();
 			ShiftingWares.LOGGER.info("Reselling previously available map #{}", FilledMapItem.getMapId(stack));
@@ -61,6 +61,6 @@ public abstract class SellMapFactoryMixin
 		final var villager = (IVillagerEntityDuck)entity;
 		TradeOffer offer = info.getReturnValue();
 		if (offer != null)
-			villager.AddCachedMap(this.structure.id().toString(), info.getReturnValue().getSellItem());
+			villager.shiftingwares$AddCachedMap(this.structure.id().toString(), info.getReturnValue().getSellItem());
 	}
 }

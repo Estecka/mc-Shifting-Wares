@@ -5,6 +5,6 @@ import net.minecraft.item.ItemStack;
 
 public interface IVillagerEntityDuck 
 {
-	Optional<ItemStack>	GetCachedMap(String key);
-	void	AddCachedMap(String key, ItemStack mapItem);
+	Optional<ItemStack>	shiftingwares$GetCachedMap(String key);
+	void	shiftingwares$AddCachedMap(String key, ItemStack mapItem);
 }

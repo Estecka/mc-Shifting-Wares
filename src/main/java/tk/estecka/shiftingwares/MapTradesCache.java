@@ -46,10 +46,10 @@ public class MapTradesCache
 			else
 				ShiftingWares.LOGGER.error("Unable to identify map name: {}", nameKey);
 
-			var oldItem = villagerMixin.GetCachedMap(nameKey);
+			var oldItem = villagerMixin.shiftingwares$GetCachedMap(nameKey);
 			if (oldItem.isEmpty() || !ItemStack.areEqual(sellItem, oldItem.get())){
 				ShiftingWares.LOGGER.warn("Caught a map trade that wasn't properly cached: #{} @ {}", FilledMapItem.getMapId(sellItem), villagerMixin);
-				villagerMixin.AddCachedMap(nameKey, sellItem);
+				villagerMixin.shiftingwares$AddCachedMap(nameKey, sellItem);
 			}
 		}
 	}
