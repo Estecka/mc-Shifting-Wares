@@ -11,12 +11,17 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.TextContent;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.village.TradeOfferList;
+import net.minecraft.village.TradeOffers;
 import net.minecraft.world.gen.structure.Structure;
 
 public class MapTradesCache 
 {
 	static public final String MAPID_CACHE = "shifting-wares:created_maps";
 	static public final Map<String, TagKey<Structure>> NAME_TO_STRUCT = new HashMap<>();
+
+	static {
+		new TradeOffers(); // NAME_TO_STRUCT init
+	}
 
 	static public void	FillCacheFromTrades(VillagerEntity villager){
 		IVillagerEntityDuck villagerMixin = (IVillagerEntityDuck)villager;

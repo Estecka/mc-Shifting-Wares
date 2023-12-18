@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -30,12 +31,12 @@ public abstract class SellMapFactoryMixin
 	@Shadow @Final private String nameKey;
 	@Shadow @Final private TagKey<Structure> structure;
 
-	@Inject( method="<init>", at=@At("HEAD"))
-	private void	CreateNameAssociation(int price, TagKey<Structure> structure, String nameKey, MapIcon.Type iconType, int maxUses, int experience)
+	@Inject( method="<init>", at=@At("TAIL"))
+	private void	CreateNameAssociation(int price, TagKey<Structure> structure, String nameKey, MapIcon.Type iconType, int maxUses, int experience, CallbackInfo info)
 	{
-		if (MapTradesCache.NAME_TO_STRUCT.containsKey(nameKey))
-			ShiftingWares.LOGGER.warn("Duplicate map name association: \"{}\"", nameKey);
-		MapTradesCache.NAME_TO_STRUCT.put(nameKey, structure);
+		if (MapTradesCache.NAME_TO_STRUCT.containsKey(this.nameKey))
+			ShiftingWares.LOGGER.warn("Duplicate map name association: \"{}\"", this.nameKey);
+		MapTradesCache.NAME_TO_STRUCT.put(this.nameKey, this.structure);
 	}
 
 	@Inject( method="create", at=@At("HEAD"), cancellable=true )
