@@ -25,6 +25,7 @@ public class TradeShuffler
 	private final Random random;
 	private final TradeOfferList offers;
 	private final Int2ObjectMap<Factory[]> jobPool;
+	private final MapTradesCache tradeCache;
 
 	public TradeShuffler(VillagerEntity villager, boolean depletedOnly)
 	{
@@ -35,6 +36,7 @@ public class TradeShuffler
 		this.job = villager.getVillagerData().getProfession();
 		this.jobLevel = villager.getVillagerData().getLevel();
 		this.random = villager.getRandom();
+		this.tradeCache = ((IVillagerEntityDuck)villager).shiftingwares$GetTradeCache();
 
 		if ( villager.getWorld().getEnabledFeatures().contains(FeatureFlags.TRADE_REBALANCE) && TradeOffers.REBALANCED_PROFESSION_TO_LEVELED_TRADE.containsKey(job) )
 			this.jobPool = TradeOffers.REBALANCED_PROFESSION_TO_LEVELED_TRADE.get(job);
@@ -48,7 +50,7 @@ public class TradeShuffler
 			return;
 		}
 
-		MapTradesCache.FillCacheFromTrades(villager);
+		tradeCache.FillCacheFromTrades(offers);
 
 		IntList slotLevels = new IntArrayList();
 		for (int lvl=VillagerData.MIN_LEVEL; lvl<=this.jobLevel; ++lvl)
@@ -69,7 +71,7 @@ public class TradeShuffler
 		for (int tradeLvl=VillagerData.MIN_LEVEL; tradeLvl<=jobLevel; ++tradeLvl)
 			DuplicataAwareReroll(tradeLvl, slotLevels);
 
-		MapTradesCache.FillCacheFromTrades(villager);
+		tradeCache.FillCacheFromTrades(offers);
 	}
 
 	public boolean	shouldReroll(int tradeIndex){

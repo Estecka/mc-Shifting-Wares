@@ -2,7 +2,7 @@ package tk.estecka.shiftingwares;
 
 import java.util.HashMap;
 import java.util.Map;
-import net.minecraft.entity.passive.VillagerEntity;
+import java.util.Optional;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -19,13 +19,42 @@ public class MapTradesCache
 	static public final String MAPID_CACHE = "shifting-wares:created_maps";
 	static public final Map<String, TagKey<Structure>> NAME_TO_STRUCT = new HashMap<>();
 
+	private final Map<String,ItemStack> cachedItems = new HashMap<String,ItemStack>();
+
 	static {
-		new TradeOffers(); // NAME_TO_STRUCT init
+		// NAME_TO_STRUCT's initialization is loosely based on the instantiation
+		// of new SellMapFactories.
+		new TradeOffers();
 	}
 
-	static public void	FillCacheFromTrades(VillagerEntity villager){
-		IVillagerEntityDuck villagerMixin = (IVillagerEntityDuck)villager;
-		TradeOfferList offers = villager.getOffers();
+	public Optional<ItemStack>	GetCachedMap(String key){
+		if (this.cachedItems.containsKey(key))
+			return Optional.of(this.cachedItems.get(key));
+		else
+			return Optional.empty();
+	}
+
+	public void	AddCachedMap(String key, ItemStack mapItem){
+		Integer neoId=FilledMapItem.getMapId(mapItem);
+		if (cachedItems.containsKey(key)){
+			Integer oldId=FilledMapItem.getMapId(cachedItems.get(key));
+			if (!neoId.equals(oldId))
+				ShiftingWares.LOGGER.error("Overwriting an existing map: #{}->#{} @ {}", oldId, neoId, key);
+			else if (ItemStack.areEqual(mapItem, cachedItems.get(key)))
+				ShiftingWares.LOGGER.warn("Updating a villager's existing map#{} @ {}", neoId, key);
+		}
+		else
+			ShiftingWares.LOGGER.info("New map {}#{}", key, neoId);
+
+		cachedItems.put(key, mapItem);
+	}
+
+	/**
+	 * Scans the trade list for maps that might not have been cached.
+	 * This is  only  really useful  the first time  a villager  is loaded after
+	 * installing the mod. Otherwise, it's paranoid safeguard.
+	 */
+	public void	FillCacheFromTrades(TradeOfferList offers){
 		for (int i=0; i<offers.size(); ++i)
 		{
 			ItemStack sellItem = offers.get(i).getSellItem();
@@ -33,7 +62,7 @@ public class MapTradesCache
 				continue;
 
 			if (!sellItem.hasCustomName()){
-				ShiftingWares.LOGGER.error("Unable to identify map#{} with no name in slot {} of {}\n{}", FilledMapItem.getMapId(sellItem), i, villager, sellItem);
+				ShiftingWares.LOGGER.error("Unable to identify map#{} with no name in slot {}:\n{}", FilledMapItem.getMapId(sellItem), i, sellItem);
 				continue;
 			}
 
@@ -51,18 +80,18 @@ public class MapTradesCache
 			else
 				ShiftingWares.LOGGER.error("Unable to identify map name: {}", nameKey);
 
-			var oldItem = villagerMixin.shiftingwares$GetCachedMap(nameKey);
+			var oldItem = this.GetCachedMap(nameKey);
 			if (oldItem.isEmpty() || !ItemStack.areEqual(sellItem, oldItem.get())){
-				ShiftingWares.LOGGER.warn("Caught a map trade that wasn't properly cached: #{} @ {}", FilledMapItem.getMapId(sellItem), villagerMixin);
-				villagerMixin.shiftingwares$AddCachedMap(nameKey, sellItem);
+				ShiftingWares.LOGGER.warn("Caught a map trade that wasn't properly cached: #{} @ {}", FilledMapItem.getMapId(sellItem), nameKey);
+				this.AddCachedMap(nameKey, sellItem);
 			}
 		}
 	}
 
-	static public Map<String,ItemStack>	ReadMapCacheFromNbt(NbtCompound nbt, Map<String, ItemStack> map){
+	public void	ReadMapCacheFromNbt(NbtCompound nbt){
 		NbtCompound nbtmap = nbt.getCompound(MAPID_CACHE);
 		if (nbtmap == null)
-			return map;
+			return;
 
 		for (String key : nbtmap.getKeys()){
 			ItemStack item = ItemStack.fromNbt(nbtmap.getCompound(key));
@@ -70,14 +99,13 @@ public class MapTradesCache
 				ShiftingWares.LOGGER.info("Converted an old cached map ({})", key);
 				key = NAME_TO_STRUCT.get(key).id().toString();
 			}
-			map.put(key, item);
+			this.cachedItems.put(key, item);
 		}
-		return map;
 	}
 
-	static public NbtCompound	WriteMapCacheToNbt(NbtCompound nbt, Map<String, ItemStack> map){
+	public NbtCompound	WriteMapCacheToNbt(NbtCompound nbt){
 		NbtCompound nbtmap = new NbtCompound();
-		for (var pair : map.entrySet())
+		for (var pair : this.cachedItems.entrySet())
 			nbtmap.put(pair.getKey(), pair.getValue().writeNbt(new NbtCompound()));
 
 		nbt.put(MAPID_CACHE, nbtmap);
