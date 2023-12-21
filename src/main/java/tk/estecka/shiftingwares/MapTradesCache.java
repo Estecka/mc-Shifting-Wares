@@ -20,6 +20,8 @@ import net.minecraft.world.gen.structure.Structure;
 
 public class MapTradesCache 
 {
+	static public final int DATA_FORMAT = 1;
+	static public final String FORMAT_KEY  = "shifting-wares:data_format";
 	static public final String MAPID_CACHE = "shifting-wares:created_maps";
 	static public final String SOLD_ITEMS  = "shifting-wares:sold_items";
 
@@ -121,27 +123,48 @@ public class MapTradesCache
 		}
 	}
 
+
+/******************************************************************************/
+/* # Serialization                                                            */
+/******************************************************************************/
+
 	public void	ReadMapCacheFromNbt(NbtCompound nbt){
 		NbtCompound nbtmap = nbt.getCompound(MAPID_CACHE);
+		int format = nbt.getInt(FORMAT_KEY);
 		if (nbtmap == null)
 			return;
 
-		for (String key : nbtmap.getKeys()){
+		if (format < 1){
+			ShiftingWares.LOGGER.info("Converting an old trade cache (v{})", format);
+			ReadLegacyNbt(nbtmap);
+		}
+		else for (String key : nbtmap.getKeys()){
 			ItemStack item = ItemStack.fromNbt(nbtmap.getCompound(key));
-			if (NAME_TO_STRUCT.containsKey(key)){
-				ShiftingWares.LOGGER.info("Converted an old cached map ({})", key);
-				key = NAME_TO_STRUCT.get(key).id().toString();
-			}
 			this.cachedItems.put(key, item);
 		}
 	}
 
 	public NbtCompound	WriteMapCacheToNbt(NbtCompound nbt){
-		NbtCompound nbtmap = new NbtCompound();
+		NbtCompound nbtcache = new NbtCompound();
 		for (var pair : this.cachedItems.entrySet())
-			nbtmap.put(pair.getKey(), pair.getValue().writeNbt(new NbtCompound()));
+			nbtcache.put(pair.getKey(), pair.getValue().writeNbt(new NbtCompound()));
 
-		nbt.put(MAPID_CACHE, nbtmap);
+		if (!nbtcache.isEmpty())
+			nbt.put(MAPID_CACHE, nbtcache);
+
 		return nbt;
+	}
+	
+	public void	ReadLegacyNbt(NbtCompound nbt){
+		for (String key : nbt.getKeys())
+		{
+			ItemStack item = ItemStack.fromNbt(nbt.getCompound(key));
+			if (!NAME_TO_STRUCT.containsKey(key))
+				ShiftingWares.LOGGER.error("Unable to convert old cache key: {}", key);
+			else
+				key = NAME_TO_STRUCT.get(key).id().toString();
+
+			this.cachedItems.put(key, item);
+		}
 	}
 }
