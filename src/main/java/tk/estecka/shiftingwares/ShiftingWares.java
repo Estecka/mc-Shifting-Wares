@@ -33,5 +33,6 @@ public class ShiftingWares implements ModInitializer
 
 	@Override
 	public void onInitialize() {
+		CachedItemEntry.Register();
 	}
 }
