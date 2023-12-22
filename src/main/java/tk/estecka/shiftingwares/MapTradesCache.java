@@ -25,16 +25,8 @@ public class MapTradesCache
 	static public final String MAPID_CACHE = "shifting-wares:created_maps";
 	static public final String SOLD_ITEMS  = "shifting-wares:sold_items";
 
-	static public final Map<String, TagKey<Structure>> NAME_TO_STRUCT = new HashMap<>();
-
 	private final Map<String, ItemStack> cachedItems = new HashMap<String,ItemStack>();
 	private final Set<String> soldItems = new HashSet<>();
-
-	static {
-		// NAME_TO_STRUCT's initialization is loosely based on the instantiation
-		// of new SellMapFactories.
-		new TradeOffers();
-	}
 
 	/**
 	 * @return null if the item needs not or cannot be cached.
@@ -54,14 +46,9 @@ public class MapTradesCache
 		if (fullName instanceof TranslatableTextContent)
 			key = ((TranslatableTextContent)fullName).getKey();
 		else {
-			ShiftingWares.LOGGER.error("Map name is not a translatation key: {}", fullName);
+			ShiftingWares.LOGGER.error("Map#{} name is not a translation key: {}", FilledMapItem.getMapId(item), fullName);
 			key = item.getName().getString();
 		}
-
-		if (NAME_TO_STRUCT.containsKey(key))
-			key = NAME_TO_STRUCT.get(key).id().toString();
-		else
-			ShiftingWares.LOGGER.error("Unable to identify map name: {}", key);
 
 		return key;
 	}
@@ -130,15 +117,10 @@ public class MapTradesCache
 
 	public void	ReadMapCacheFromNbt(NbtCompound nbt){
 		NbtCompound nbtmap = nbt.getCompound(MAPID_CACHE);
-		int format = nbt.getInt(FORMAT_KEY);
 		if (nbtmap == null)
 			return;
 
-		if (format < 1){
-			ShiftingWares.LOGGER.info("Converting an old trade cache (v{})", format);
-			ReadLegacyNbt(nbtmap);
-		}
-		else for (String key : nbtmap.getKeys()){
+		for (String key : nbtmap.getKeys()){
 			ItemStack item = ItemStack.fromNbt(nbtmap.getCompound(key));
 			this.cachedItems.put(key, item);
 		}
@@ -154,17 +136,5 @@ public class MapTradesCache
 
 		return nbt;
 	}
-	
-	public void	ReadLegacyNbt(NbtCompound nbt){
-		for (String key : nbt.getKeys())
-		{
-			ItemStack item = ItemStack.fromNbt(nbt.getCompound(key));
-			if (!NAME_TO_STRUCT.containsKey(key))
-				ShiftingWares.LOGGER.error("Unable to convert old cache key: {}", key);
-			else
-				key = NAME_TO_STRUCT.get(key).id().toString();
 
-			this.cachedItems.put(key, item);
-		}
-	}
 }

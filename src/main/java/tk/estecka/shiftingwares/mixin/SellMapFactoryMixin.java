@@ -5,21 +5,16 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.map.MapIcon;
-import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers.SellMapFactory;
-import net.minecraft.world.gen.structure.Structure;
 import tk.estecka.shiftingwares.IVillagerEntityDuck;
-import tk.estecka.shiftingwares.MapTradesCache;
 import tk.estecka.shiftingwares.ShiftingWares;
 
 @Mixin(SellMapFactory.class)
@@ -29,15 +24,6 @@ public abstract class SellMapFactoryMixin
 	@Shadow @Final private int maxUses;
 	@Shadow @Final private int experience;
 	@Shadow @Final private String nameKey;
-	@Shadow @Final private TagKey<Structure> structure;
-
-	@Inject( method="<init>", at=@At("TAIL"))
-	private void	CreateNameAssociation(int price, TagKey<Structure> structure, String nameKey, MapIcon.Type iconType, int maxUses, int experience, CallbackInfo info)
-	{
-		if (MapTradesCache.NAME_TO_STRUCT.containsKey(this.nameKey))
-			ShiftingWares.LOGGER.warn("Duplicate map name association: \"{}\"", this.nameKey);
-		MapTradesCache.NAME_TO_STRUCT.put(this.nameKey, this.structure);
-	}
 
 	@Inject( method="create", at=@At("HEAD"), cancellable=true )
 	private void	restoreCached(Entity entity, Random random, CallbackInfoReturnable<TradeOffer> info){
@@ -45,10 +31,10 @@ public abstract class SellMapFactoryMixin
 			return;
 
 		final var villagerDuck = (IVillagerEntityDuck)entity;
-		var cachedMap = villagerDuck.shiftingwares$GetTradeCache().GetCachedMap(this.structure.id().toString());
+		var cachedMap = villagerDuck.shiftingwares$GetTradeCache().GetCachedMap(this.nameKey.toString());
 		if (cachedMap.isPresent()) {
 			ItemStack stack = cachedMap.get();
-			ShiftingWares.LOGGER.info("Reselling previously available map #{}", FilledMapItem.getMapId(stack));
+			ShiftingWares.LOGGER.info("Reselling previously available map #{} @ {}", FilledMapItem.getMapId(stack), nameKey);
 			info.setReturnValue(new TradeOffer( new ItemStack(Items.EMERALD, this.price), new ItemStack(Items.COMPASS), stack, this.maxUses, this.experience, 0.2f ));
 		}
 	}
@@ -62,6 +48,6 @@ public abstract class SellMapFactoryMixin
 		final var villager = (IVillagerEntityDuck)entity;
 		TradeOffer offer = info.getReturnValue();
 		if (offer != null)
-			villager.shiftingwares$GetTradeCache().AddCachedMap(this.structure.id().toString(), info.getReturnValue().getSellItem());
+			villager.shiftingwares$GetTradeCache().AddCachedMap(this.nameKey, info.getReturnValue().getSellItem());
 	}
 }
