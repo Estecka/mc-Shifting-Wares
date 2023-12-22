@@ -10,13 +10,13 @@ import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.tag.TagKey;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.text.TextContent;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
-import net.minecraft.village.TradeOffers;
-import net.minecraft.world.gen.structure.Structure;
 
 public class MapTradesCache 
 {
@@ -69,10 +69,10 @@ public class MapTradesCache
 			Integer oldId=FilledMapItem.getMapId(cachedItems.get(key));
 			if (soldItems.contains(key))
 				ShiftingWares.LOGGER.info("New map trade #{}->#{} @ {}", oldId, neoId, key);
-			else if (!neoId.equals(oldId))
-				ShiftingWares.LOGGER.error("Overwriting existing map trade: #{}->#{} @ {}", oldId, neoId, key);
-			else
+			else if (neoId.equals(oldId))
 				ShiftingWares.LOGGER.warn("Updating existing map trade #{} @ {}", neoId, key);
+			else
+				ShiftingWares.LOGGER.error("Overwriting existing map trade: #{}->#{} @ {}", oldId, neoId, key);
 		}
 
 		cachedItems.put(key, mapItem);
@@ -116,23 +116,34 @@ public class MapTradesCache
 /******************************************************************************/
 
 	public void	ReadMapCacheFromNbt(NbtCompound nbt){
-		NbtCompound nbtmap = nbt.getCompound(MAPID_CACHE);
-		if (nbtmap == null)
-			return;
+		NbtCompound nbtcache = nbt.getCompound(MAPID_CACHE);
+		NbtList nbtsold = nbt.getList(SOLD_ITEMS, NbtElement.STRING_TYPE);
 
-		for (String key : nbtmap.getKeys()){
-			ItemStack item = ItemStack.fromNbt(nbtmap.getCompound(key));
+		if (nbtcache != null)
+		for (String key : nbtcache.getKeys()){
+			ItemStack item = ItemStack.fromNbt(nbtcache.getCompound(key));
 			this.cachedItems.put(key, item);
+		}
+
+		if (nbtsold != null)
+		for (int i=0; i<nbtsold.size(); ++i){
+			String key = nbtsold.getString(i);
+			this.soldItems.add(key);
 		}
 	}
 
 	public NbtCompound	WriteMapCacheToNbt(NbtCompound nbt){
 		NbtCompound nbtcache = new NbtCompound();
+		NbtList nbtsold = new NbtList();
+
 		for (var pair : this.cachedItems.entrySet())
 			nbtcache.put(pair.getKey(), pair.getValue().writeNbt(new NbtCompound()));
+		for (String key : this.soldItems)
+			nbtsold.add(NbtString.of(key));
 
-		if (!nbtcache.isEmpty())
-			nbt.put(MAPID_CACHE, nbtcache);
+		nbt.putInt(FORMAT_KEY, DATA_FORMAT);
+		if (!nbtcache.isEmpty()) nbt.put(MAPID_CACHE, nbtcache);
+		if (!nbtsold.isEmpty() ) nbt.put(SOLD_ITEMS, nbtsold);
 
 		return nbt;
 	}
