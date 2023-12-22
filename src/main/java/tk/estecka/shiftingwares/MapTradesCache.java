@@ -3,6 +3,7 @@ package tk.estecka.shiftingwares;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import org.jetbrains.annotations.Nullable;
@@ -69,7 +70,7 @@ public class MapTradesCache
 			Integer oldId=FilledMapItem.getMapId(cachedItems.get(key));
 			if (soldItems.contains(key))
 				ShiftingWares.LOGGER.info("New map trade #{}->#{} @ {}", oldId, neoId, key);
-			else if (neoId.equals(oldId))
+			else if (Objects.equals(neoId, oldId))
 				ShiftingWares.LOGGER.warn("Updating existing map trade #{} @ {}", neoId, key);
 			else
 				ShiftingWares.LOGGER.error("Overwriting existing map trade: #{}->#{} @ {}", oldId, neoId, key);
@@ -79,8 +80,8 @@ public class MapTradesCache
 		soldItems.remove(key);
 	}
 
-	public boolean CanForgetCache(String key){
-		return soldItems.contains(key) || !cachedItems.containsKey(key);
+	public boolean HasSold(String key){
+		return soldItems.contains(key);
 	}
 
 	/**
@@ -89,23 +90,25 @@ public class MapTradesCache
 	 * installing the mod. The rest of the time, it's paranoid safeguard.
 	 * 
 	 * 2. Detects maps  that  have been  sold  at least once, and marks them  as
-	 * potentiallyy re-rollable.
+	 * potentially re-rollable.
 	 */
 	public void	FillCacheFromTrades(TradeOfferList offers){
 		for (TradeOffer offer : offers) 
 		{
 			ItemStack sellItem = offer.getSellItem();
 			String cacheKey = FindCacheKey(sellItem);
+			if (cacheKey == null)
+				continue;
 
 			if (offer.hasBeenUsed()) {
 				this.soldItems.add(cacheKey);
+				ShiftingWares.LOGGER.info("Marked map as sold: #{} @ {}", FilledMapItem.getMapId(sellItem), cacheKey);
 			}
-			else {
-				var oldItem = this.GetCachedMap(cacheKey);
-				if (oldItem.isEmpty() || !ItemStack.areEqual(sellItem, oldItem.get())){
-					ShiftingWares.LOGGER.warn("Caught a map trade that wasn't properly cached: #{} @ {}", FilledMapItem.getMapId(sellItem), cacheKey);
-					this.AddCachedMap(cacheKey, sellItem);
-				}
+
+			var oldItem = this.GetCachedMap(cacheKey);
+			if (oldItem.isEmpty() || !ItemStack.areEqual(sellItem, oldItem.get())){
+				ShiftingWares.LOGGER.warn("Caught a map trade that wasn't properly cached: #{} @ {}", FilledMapItem.getMapId(sellItem), cacheKey);
+				this.AddCachedMap(cacheKey, sellItem);
 			}
 		}
 	}

@@ -15,6 +15,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers.SellMapFactory;
 import tk.estecka.shiftingwares.IVillagerEntityDuck;
+import tk.estecka.shiftingwares.MapTradesCache;
 import tk.estecka.shiftingwares.ShiftingWares;
 
 @Mixin(SellMapFactory.class)
@@ -31,8 +32,11 @@ public abstract class SellMapFactoryMixin
 			return;
 
 		final var villagerDuck = (IVillagerEntityDuck)entity;
-		var cachedMap = villagerDuck.shiftingwares$GetTradeCache().GetCachedMap(this.nameKey.toString());
-		if (cachedMap.isPresent()) {
+		MapTradesCache cache = villagerDuck.shiftingwares$GetTradeCache();
+		var cachedMap = cache.GetCachedMap(this.nameKey.toString());
+	
+		if (cachedMap.isPresent() && !(cache.HasSold(this.nameKey) && entity.getWorld().getGameRules().getBoolean(ShiftingWares.MAP_RULE)))
+		{
 			ItemStack stack = cachedMap.get();
 			ShiftingWares.LOGGER.info("Reselling previously available map #{} @ {}", FilledMapItem.getMapId(stack), nameKey);
 			info.setReturnValue(new TradeOffer( new ItemStack(Items.EMERALD, this.price), new ItemStack(Items.COMPASS), stack, this.maxUses, this.experience, 0.2f ));
