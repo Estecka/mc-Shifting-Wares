@@ -14,12 +14,14 @@ Disabling all rules effectively disables the mod.
 	Causes villagers to re-roll any **fully depleted** trade offer, whenever they restock at their job station.
 	This also prevents offers from being refilled, if they have a remaining uses.
 
-## Map trades
-Maps are never forgotten by the game, and lock their structures from appearing on other maps.
-To prevent daily rerolls from throwing away endless amounts of unsold maps, those trades are handled very differently.
+## Exploration map trades
+Minecraft permanently saves any create map, and lock their structures from appearing on other exploration maps.
+To prevent daily rerolls from throwing away endless amounts of unsold maps, those trades are handled differently.
 
-By default, cartographers will permanently remember each map they sell, and offer it again it the next time the map trade comes up.
+Cartographers will remember each map they sell, and offer it again it the next time the same map trade comes up.
 The gamerule `shiftingWares.allowMapReroll` (disabled by default) will allow them to forget a map, after it has been sold at least once.
+
+The map's item name, or its translation key, is used to tell apart different types of maps.
 
 
 ## Technical details
