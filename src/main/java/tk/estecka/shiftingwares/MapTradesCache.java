@@ -44,10 +44,10 @@ public class MapTradesCache
 
 		TextContent fullName = item.getName().getContent();
 		String key;
-		if (fullName instanceof TranslatableTextContent)
-			key = ((TranslatableTextContent)fullName).getKey();
+		if (fullName instanceof TranslatableTextContent translatable)
+			key = translatable.getKey();
 		else {
-			ShiftingWares.LOGGER.error("Map#{} name is not a translation key: {}", FilledMapItem.getMapId(item), fullName);
+			ShiftingWares.LOGGER.error("Map#{} name is not a translation key: {} {}", FilledMapItem.getMapId(item), fullName.getClass(), fullName);
 			key = item.getName().getString();
 		}
 
@@ -64,7 +64,7 @@ public class MapTradesCache
 	public void	AddCachedMap(String key, ItemStack mapItem){
 		Integer neoId=FilledMapItem.getMapId(mapItem);
 		if (!cachedItems.containsKey(key))
-			ShiftingWares.LOGGER.info("New map trade: #{} @	{}", neoId, key);
+			ShiftingWares.LOGGER.info("New map trade: #{} @ {}", neoId, key);
 		else
 		{
 			Integer oldId=FilledMapItem.getMapId(cachedItems.get(key));
