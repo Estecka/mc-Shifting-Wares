@@ -6,7 +6,7 @@ The most noticeable effects will be felt on any profession able to sell enchante
 
 ## Triggers
 
-There are two gamerules that control when trades can be re-rolled. When creating a new world, both rules are On by default, and found under the "Mobs" category.  
+There are two gamerules that control when trades can be re-rolled. Both are enabled by default.  
 Disabling all rules effectively disables the mod.
 - `shiftingWares.dailyReroll`:
 	Causes villagers to re-roll **all** their offers once per day, the first time they restock at their job station.
@@ -14,15 +14,21 @@ Disabling all rules effectively disables the mod.
 	Causes villagers to re-roll any **fully depleted** trade offer, whenever they restock at their job station.
 	This also prevents offers from being refilled, if they have a remaining uses.
 
-## Caveats
+## Map trades
+Maps are never forgotten by the game, and lock their structures from appearing on other maps.
+To prevent daily rerolls from throwing away endless amounts of unsold maps, those trades are handled very differently.
 
-- **When re-rolling depleted trades, there is a chance that a villager may end up with the same offer twice.** However this can only happen when re-rolling a single trade for a given job level.
+By default, cartographers will permanently remember each map they sell, and offer it again it the next time the map trade comes up.
+The gamerule `shiftingWares.allowMapReroll` (disabled by default) will allow them to forget a map, after it has been sold at least once.
 
-- **The "Demand Bonus" game mechanic is mostly removed,** as the demand bonus data is deleted along the offers that are being re-rolled. Any effect it may still have is uncertain.
-
-- **Cartographers are excluded from generating more different maps than they would in vanilla.** Maps they create are never forgotten by the game, and lock their structures from appearing on other maps. This would cause issues with Daily Rerolls, as cartographers would generate a lot of maps that would never be sold.   
-If you don't use Daily Rerolls and wish to let them generate new maps, you can roll-back to version 1.0.1 of the mod for now.
 
 ## Technical details
+- This mod runs under the assumption that villagers have at most 2 trades per level. It will always try to enforce this layout when rerolling.  
 
-This mod runs with the assumption that villagers have 2 trades per level, and 1 master trade. It will always try to enforce this layout when rerolling. If a villagers is unable to yield enough trades for a given level, (e.g: Explorer Map trades in worlds with no structure), their trade list will be padded with empty trades in order to enforce the layout.
+- If a villager is unable to generate all registered trades for a level, it will be replaced with an empty trade. With vanilla trades, this should only ever happen to cartographers, who are unable to generate explorer maps in worlds with no structures.  
+These paddings are required to ensure trades are rerolled with one of equivalent level; a trade's position in the list is the only indication to its level.
+Placeholder trades will never take the place of a valid trade; they will only show up if all other options are exhausted.
+
+- The "Demand Bonus" game mechanic is mostly removed, because the demand bonus data is deleted along with the offers that are rerolled. Any effect it may still have is uncertain.
+
+- Depleted rerolls have a chance to yield duplicate trades.
