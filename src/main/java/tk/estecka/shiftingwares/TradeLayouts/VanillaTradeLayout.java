@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerProfession;
@@ -17,7 +18,12 @@ implements ITradeLayoutProvider
 		List<Factory[]> layout = new ArrayList<>();
 		VillagerProfession job = villager.getVillagerData().getProfession();
 		int jobLevel = villager.getVillagerData().getLevel();
-		Int2ObjectMap<Factory[]> jobPool = TradeOffers.PROFESSION_TO_LEVELED_TRADE.get(job);
+
+		Int2ObjectMap<Factory[]> jobPool;
+		if ( villager.getWorld().getEnabledFeatures().contains(FeatureFlags.TRADE_REBALANCE) && TradeOffers.REBALANCED_PROFESSION_TO_LEVELED_TRADE.containsKey(job) )
+			jobPool = TradeOffers.REBALANCED_PROFESSION_TO_LEVELED_TRADE.get(job);
+		else
+			jobPool = TradeOffers.PROFESSION_TO_LEVELED_TRADE.get(job);
 
 		if (jobPool == null){
 			ShiftingWares.LOGGER.error("No trade pool for job {}.", job);
