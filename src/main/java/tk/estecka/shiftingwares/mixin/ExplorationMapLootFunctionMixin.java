@@ -14,6 +14,7 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.function.ExplorationMapLootFunction;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.world.gen.structure.Structure;
+import tk.estecka.shiftingwares.IVillagerEntityDuck;
 import tk.estecka.shiftingwares.MapTradesCache;
 import tk.estecka.shiftingwares.ShiftingWares;
 
@@ -25,6 +26,9 @@ public abstract class ExplorationMapLootFunctionMixin
 	@Inject( method="process", at=@At("HEAD"), cancellable=true )
 	private void	RestoreCachedItem(ItemStack stack, LootContext context, CallbackInfoReturnable<ItemStack> info){
 		Entity entity = context.get(LootContextParameters.THIS_ENTITY);
+		if(!(entity instanceof IVillagerEntityDuck))
+			return;
+
 		String cacheKey = MapTradesCache.GetCacheKey(this.destination);
 		if (cacheKey == null){
 			cacheKey = destination.id().toString();
