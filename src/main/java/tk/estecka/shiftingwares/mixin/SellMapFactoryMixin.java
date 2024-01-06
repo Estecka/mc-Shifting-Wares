@@ -15,6 +15,7 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers.SellMapFactory;
 import tk.estecka.shiftingwares.IVillagerEntityDuck;
+import tk.estecka.shiftingwares.MapTradesCache;
 import tk.estecka.shiftingwares.ShiftingWares;
 
 @Mixin(SellMapFactory.class)
@@ -26,28 +27,31 @@ public abstract class SellMapFactoryMixin
 	@Shadow @Final private String nameKey;
 
 	@Inject( method="create", at=@At("HEAD"), cancellable=true )
-	public void	restoreCached(Entity entity, Random random, CallbackInfoReturnable<TradeOffer> info){
+	private void	restoreCached(Entity entity, Random random, CallbackInfoReturnable<TradeOffer> info){
 		if (!(entity instanceof VillagerEntity))
 			return;
 
 		final var villagerDuck = (IVillagerEntityDuck)entity;
-		var cachedMap = villagerDuck.GetCachedMap(this.nameKey);
-		if (cachedMap.isPresent()) {
+		MapTradesCache cache = villagerDuck.shiftingwares$GetTradeCache();
+		var cachedMap = cache.GetCachedMap(this.nameKey.toString());
+	
+		if (cachedMap.isPresent() && !(cache.HasSold(this.nameKey) && entity.getWorld().getGameRules().getBoolean(ShiftingWares.MAP_RULE)))
+		{
 			ItemStack stack = cachedMap.get();
-			ShiftingWares.LOGGER.info("Reselling previously available map #{}", FilledMapItem.getMapId(stack));
+			ShiftingWares.LOGGER.info("Reselling previously available map #{} @ {}", FilledMapItem.getMapId(stack), nameKey);
 			info.setReturnValue(new TradeOffer( new ItemStack(Items.EMERALD, this.price), new ItemStack(Items.COMPASS), stack, this.maxUses, this.experience, 0.2f ));
 		}
 	}
 
 	
 	@Inject( method="create", at=@At("RETURN") )
-	public void	cacheCreated(Entity entity, Random random, CallbackInfoReturnable<TradeOffer> info){
+	private void	cacheCreated(Entity entity, Random random, CallbackInfoReturnable<TradeOffer> info){
 		if (!(entity instanceof VillagerEntity))
 			return;
 
 		final var villager = (IVillagerEntityDuck)entity;
 		TradeOffer offer = info.getReturnValue();
 		if (offer != null)
-			villager.AddCachedMap(this.nameKey, info.getReturnValue().getSellItem());
+			villager.shiftingwares$GetTradeCache().AddCachedMap(this.nameKey, info.getReturnValue().getSellItem());
 	}
 }

@@ -18,8 +18,11 @@ import org.slf4j.LoggerFactory;
 public class ShiftingWares implements ModInitializer
 {
 	static public final Logger LOGGER = LoggerFactory.getLogger("Shifting-Wares");
-	static public final GameRules.Key<BooleanRule> DAILY_RULE    = GameRuleRegistry.register("shiftingWares.dailyReroll",   GameRules.Category.MOBS, GameRuleFactory.createBooleanRule(true));
-	static public final GameRules.Key<BooleanRule> DEPLETED_RULE = GameRuleRegistry.register("shiftingWares.depleteReroll", GameRules.Category.MOBS, GameRuleFactory.createBooleanRule(true));
+
+	static public final GameRules.Key<BooleanRule> DAILY_RULE    = GameRuleRegistry.register("shiftingWares.dailyReroll",    GameRules.Category.MOBS, GameRuleFactory.createBooleanRule(true));
+	static public final GameRules.Key<BooleanRule> DEPLETED_RULE = GameRuleRegistry.register("shiftingWares.depleteReroll",  GameRules.Category.MOBS, GameRuleFactory.createBooleanRule(true));
+	static public final GameRules.Key<BooleanRule> MAP_RULE      = GameRuleRegistry.register("shiftingWares.allowMapReroll", GameRules.Category.MOBS, GameRuleFactory.createBooleanRule(false));
+
 	static public final TradeOffer PLACEHOLDER_TRADE = new TradeOffer(ItemStack.EMPTY, ItemStack.EMPTY, ItemStack.EMPTY, 0, 0, 0, 0, 0);
 
 	static public final ITradeLayoutProvider TRADE_LAYOUT_PROVIDER;

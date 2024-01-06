@@ -20,6 +20,7 @@ public class TradeShuffler
 	private final Random random;
 	private final TradeOfferList offers;
 	private final List<Factory[]> tradeLayout;
+	private final MapTradesCache tradeCache;
 
 	public TradeShuffler(VillagerEntity villager, boolean depletedOnly)
 	{
@@ -29,6 +30,7 @@ public class TradeShuffler
 		this.offers = villager.getOffers();
 		this.job = villager.getVillagerData().getProfession();
 		this.random = villager.getRandom();
+		this.tradeCache = ((IVillagerEntityDuck)villager).shiftingwares$GetTradeCache();
 
 		this.tradeLayout = ShiftingWares.TRADE_LAYOUT_PROVIDER.GetTradeLayout(villager);
 	}
@@ -39,7 +41,7 @@ public class TradeShuffler
 			return;
 		}
 
-		MapTradesCache.FillCacheFromTrades(villager);
+		tradeCache.FillCacheFromTrades(offers);
 
 		// Trim superfluous trades
 		for (int i=offers.size()-1; tradeLayout.size()<=i; --i)
@@ -52,7 +54,7 @@ public class TradeShuffler
 
 		DuplicataAwareReroll();
 
-		MapTradesCache.FillCacheFromTrades(villager);
+		tradeCache.FillCacheFromTrades(offers);
 	}
 
 	public boolean	shouldReroll(int tradeIndex){
