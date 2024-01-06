@@ -40,6 +40,20 @@ dependencies {
 	modCompileOnly "maven.modrinth:villagerconfig:${project.villagerconfig_version}"
 }
 
+loom {
+	runs {
+		client {
+			programArg "--username"
+			programArg "Player"
+		}
+		vanillish {
+			inherit client
+			configName "Minecraft Client Vanillish"
+			property("fabric.debug.disableModIds", "villagerconfig")
+		}
+	}
+}
+
 processResources {
 	inputs.property "version", project.version
 

@@ -6,7 +6,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -14,10 +16,13 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.text.TextContent;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
+import net.minecraft.village.TradeOffers;
+import net.minecraft.world.gen.structure.Structure;
 
 public class MapTradesCache 
 {
@@ -25,9 +30,28 @@ public class MapTradesCache
 	static public final String FORMAT_KEY  = "shifting-wares:data_format";
 	static public final String MAPID_CACHE = "shifting-wares:created_maps";
 	static public final String SOLD_ITEMS  = "shifting-wares:sold_items";
+	static private final Map<TagKey<Structure>, String> STRUCT_TO_NAME = new HashMap<>();
+
+	static {
+		// Initializes STRUCT_TO_CACHE via the initialization of SellMapFactories.
+		new TradeOffers();
+	}
 
 	private final Map<String, ItemStack> cachedItems = new HashMap<String,ItemStack>();
 	private final Set<String> soldItems = new HashSet<>();
+
+	static public void	RegisterStructure(TagKey<Structure> structure, @NotNull String cacheKey){
+		if (cacheKey.equals(STRUCT_TO_NAME.get(structure)))
+			ShiftingWares.LOGGER.warn("Duplicate map registration for {} @ {}", structure, cacheKey);
+		else if (STRUCT_TO_NAME.containsKey(structure))
+			ShiftingWares.LOGGER.error("Overwriting registration for {} @ {} => {}", structure, STRUCT_TO_NAME.get(structure), cacheKey);
+
+		STRUCT_TO_NAME.put(structure, cacheKey);
+	}
+
+	static public String	GetCacheKey(TagKey<Structure> structure) {
+		return STRUCT_TO_NAME.get(structure);
+	}
 
 	/**
 	 * @return null if the item needs not or cannot be cached.
@@ -52,6 +76,24 @@ public class MapTradesCache
 		}
 
 		return key;
+	}
+
+	/**
+	 * @return Empty if the entity is allowed to forget the item, or does not
+	 * remember it. Otherwise, returns the corresponding cached item.
+	 */
+	static public Optional<ItemStack> Resell(Entity entity, String cacheKey){
+		if (entity instanceof IVillagerEntityDuck villager) 
+		{
+			MapTradesCache cache =  villager.shiftingwares$GetTradeCache();
+			Optional<ItemStack> cachedMap = cache.GetCachedMap(cacheKey);
+			if (cachedMap.isEmpty() || (cache.HasSold(cacheKey) && entity.getWorld().getGameRules().getBoolean(ShiftingWares.MAP_RULE)))
+				return Optional.empty();
+			else
+				return cachedMap;
+		}
+
+		return Optional.empty();
 	}
 
 	public Optional<ItemStack>	GetCachedMap(String key){
