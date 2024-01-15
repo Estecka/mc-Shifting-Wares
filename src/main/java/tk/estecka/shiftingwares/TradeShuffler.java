@@ -32,7 +32,7 @@ public class TradeShuffler
 		this.random = villager.getRandom();
 		this.tradeCache = ((IVillagerEntityDuck)villager).shiftingwares$GetTradeCache();
 
-		this.tradeLayout = ShiftingWares.TRADE_LAYOUT_PROVIDER.GetTradeLayout(villager);
+		this.tradeLayout = ShiftingWares.GetTradeLayout(villager);
 	}
 
 	public void	Reroll(){

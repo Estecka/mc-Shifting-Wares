@@ -10,6 +10,7 @@ import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.TradeOffers.Factory;
 import tk.estecka.shiftingwares.ShiftingWares;
+import tk.estecka.shiftingwares.api.ITradeLayoutProvider;
 
 public class VanillaTradeLayout
 implements ITradeLayoutProvider
