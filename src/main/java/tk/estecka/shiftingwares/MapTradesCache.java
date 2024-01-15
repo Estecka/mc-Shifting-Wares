@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import org.jetbrains.annotations.Nullable;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -52,6 +53,24 @@ public class MapTradesCache
 		}
 
 		return key;
+	}
+
+	/**
+	 * @return Empty if the entity is allowed to forget the item, or does not
+	 * remember it. Otherwise, returns the corresponding cached item.
+	 */
+	static public Optional<ItemStack> Resell(Entity entity, String cacheKey){
+		if (entity instanceof IVillagerEntityDuck villager) 
+		{
+			MapTradesCache cache =  villager.shiftingwares$GetTradeCache();
+			Optional<ItemStack> cachedMap = cache.GetCachedMap(cacheKey);
+			if (cachedMap.isEmpty() || (cache.HasSold(cacheKey) && entity.getWorld().getGameRules().getBoolean(ShiftingWares.MAP_RULE)))
+				return Optional.empty();
+			else
+				return cachedMap;
+		}
+
+		return Optional.empty();
 	}
 
 	public Optional<ItemStack>	GetCachedMap(String key){

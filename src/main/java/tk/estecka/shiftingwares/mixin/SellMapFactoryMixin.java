@@ -28,17 +28,11 @@ public abstract class SellMapFactoryMixin
 
 	@Inject( method="create", at=@At("HEAD"), cancellable=true )
 	private void	restoreCached(Entity entity, Random random, CallbackInfoReturnable<TradeOffer> info){
-		if (!(entity instanceof VillagerEntity))
-			return;
+		var cachedMap = MapTradesCache.Resell(entity, this.nameKey);
 
-		final var villagerDuck = (IVillagerEntityDuck)entity;
-		MapTradesCache cache = villagerDuck.shiftingwares$GetTradeCache();
-		var cachedMap = cache.GetCachedMap(this.nameKey.toString());
-	
-		if (cachedMap.isPresent() && !(cache.HasSold(this.nameKey) && entity.getWorld().getGameRules().getBoolean(ShiftingWares.MAP_RULE)))
-		{
+		if (cachedMap.isPresent()){
 			ItemStack stack = cachedMap.get();
-			ShiftingWares.LOGGER.info("Reselling previously available map #{} @ {}", FilledMapItem.getMapId(stack), nameKey);
+			ShiftingWares.LOGGER.info("Reselling previously available map #{} @ {}", FilledMapItem.getMapId(stack), this.nameKey);
 			info.setReturnValue(new TradeOffer( new ItemStack(Items.EMERALD, this.price), new ItemStack(Items.COMPASS), stack, this.maxUses, this.experience, 0.2f ));
 		}
 	}
