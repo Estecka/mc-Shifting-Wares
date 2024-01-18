@@ -25,8 +25,6 @@ The map's item name, or its translation key, is used to tell apart different typ
 
 
 ## Technical details
-- This mod runs under the assumption that villagers have at most 2 trades per level. It will always try to enforce this layout when rerolling.  
-
 - If a villager is unable to generate all registered trades for a level, it will be replaced with an empty trade. With vanilla trades, this should only ever happen to cartographers, who are unable to generate explorer maps in worlds with no structures.  
 These paddings are required to ensure trades are rerolled with one of equivalent level; a trade's position in the list is the only indication to its level.
 Placeholder trades will never take the place of a valid trade; they will only show up if all other options are exhausted.
@@ -34,3 +32,8 @@ Placeholder trades will never take the place of a valid trade; they will only sh
 - The "Demand Bonus" game mechanic is mostly removed, because the demand bonus data is deleted along with the offers that are rerolled. Any effect it may still have is uncertain.
 
 - Depleted rerolls have a chance to yield duplicate trades.
+
+## For developpers
+By default, shifting-Wares assumes 2 trades per level, and pulls its trade pools from the same place as Vanilla.
+
+If you have a mod that changes any of that, Shifting-Wares has an API you can use to specify the trade pools and layout that should be used instead.
