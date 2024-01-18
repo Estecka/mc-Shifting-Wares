@@ -46,6 +46,6 @@ public abstract class SellMapFactoryMixin
 		final var villager = (IVillagerEntityDuck)entity;
 		TradeOffer offer = info.getReturnValue();
 		if (offer != null)
-			villager.shiftingwares$GetTradeCache().AddCachedMap(this.nameKey, info.getReturnValue().getSellItem());
+			villager.shiftingwares$GetItemCache().AddCachedItem(this.nameKey, info.getReturnValue().getSellItem());
 	}
 }

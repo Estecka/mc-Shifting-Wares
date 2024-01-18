@@ -30,7 +30,7 @@ public class TradeShuffler
 		this.offers = villager.getOffers();
 		this.job = villager.getVillagerData().getProfession();
 		this.random = villager.getRandom();
-		this.tradeCache = ((IVillagerEntityDuck)villager).shiftingwares$GetTradeCache();
+		this.tradeCache = ((IVillagerEntityDuck)villager).shiftingwares$GetItemCache();
 
 		this.tradeLayout = ShiftingWares.GetTradeLayout(villager);
 	}

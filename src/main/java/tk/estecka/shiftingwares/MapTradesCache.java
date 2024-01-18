@@ -19,8 +19,10 @@ import net.minecraft.text.TextContent;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
+import tk.estecka.shiftingwares.api.PersistentItemCache;
 
-public class MapTradesCache 
+public class MapTradesCache
+implements PersistentItemCache
 {
 	static public final int DATA_FORMAT = 1;
 	static public final String FORMAT_KEY  = "shifting-wares:data_format";
@@ -62,8 +64,8 @@ public class MapTradesCache
 	static public Optional<ItemStack> Resell(Entity entity, String cacheKey){
 		if (entity instanceof IVillagerEntityDuck villager) 
 		{
-			MapTradesCache cache =  villager.shiftingwares$GetTradeCache();
-			Optional<ItemStack> cachedMap = cache.GetCachedMap(cacheKey);
+			MapTradesCache cache =  villager.shiftingwares$GetItemCache();
+			Optional<ItemStack> cachedMap = cache.GetCachedItem(cacheKey);
 			if (cachedMap.isEmpty() || (cache.HasSold(cacheKey) && entity.getWorld().getGameRules().getBoolean(ShiftingWares.MAP_RULE)))
 				return Optional.empty();
 			else
@@ -73,14 +75,15 @@ public class MapTradesCache
 		return Optional.empty();
 	}
 
-	public Optional<ItemStack>	GetCachedMap(String key){
-		if (this.cachedItems.containsKey(key))
+	public Optional<ItemStack>	GetCachedItem(String key){
+		ItemStack item = this.cachedItems.get(key);
+		if (item != null)
 			return Optional.of(this.cachedItems.get(key));
 		else
 			return Optional.empty();
 	}
 
-	public void	AddCachedMap(String key, ItemStack mapItem){
+	public void	AddCachedItem(String key, ItemStack mapItem){
 		Integer neoId=FilledMapItem.getMapId(mapItem);
 		if (!cachedItems.containsKey(key))
 			ShiftingWares.LOGGER.info("New map trade: #{} @ {}", neoId, key);
@@ -124,10 +127,10 @@ public class MapTradesCache
 				ShiftingWares.LOGGER.info("Marked map as sold: #{} @ {}", FilledMapItem.getMapId(sellItem), cacheKey);
 			}
 
-			var oldItem = this.GetCachedMap(cacheKey);
+			var oldItem = this.GetCachedItem(cacheKey);
 			if (oldItem.isEmpty() || !ItemStack.areEqual(sellItem, oldItem.get())){
 				ShiftingWares.LOGGER.warn("Caught a map trade that wasn't properly cached: #{} @ {}", FilledMapItem.getMapId(sellItem), cacheKey);
-				this.AddCachedMap(cacheKey, sellItem);
+				this.AddCachedItem(cacheKey, sellItem);
 			}
 		}
 	}
