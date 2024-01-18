@@ -17,3 +17,7 @@ Initial release
 
 ## 1.1
 - Added a gamerules that allows cartographers to regenerate maps that have been sold at least once.
+
+# v2
+- Made some methods and types available through an API.
+- Added an entrypoint to define villager trades from outside mods

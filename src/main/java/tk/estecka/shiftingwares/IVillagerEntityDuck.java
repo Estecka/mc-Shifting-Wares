@@ -1,6 +1,9 @@
 package tk.estecka.shiftingwares;
 
-public interface IVillagerEntityDuck 
+import tk.estecka.shiftingwares.api.IHasItemCache;
+
+public interface IVillagerEntityDuck
+extends IHasItemCache
 {
-	MapTradesCache shiftingwares$GetTradeCache();
+	MapTradesCache shiftingwares$GetItemCache();
 }

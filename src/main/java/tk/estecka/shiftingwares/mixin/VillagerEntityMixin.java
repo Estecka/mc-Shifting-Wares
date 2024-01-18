@@ -29,7 +29,7 @@ implements IVillagerEntityDuck
 	private boolean	IsDailyRerollEnabled()   { return villager.getWorld().getGameRules().get(ShiftingWares.DAILY_RULE   ).get(); }
 	private boolean	IsDepleteRerollEnabled() { return villager.getWorld().getGameRules().get(ShiftingWares.DEPLETED_RULE).get(); }
 
-	public MapTradesCache shiftingwares$GetTradeCache() { return this.tradeCache; }
+	public MapTradesCache shiftingwares$GetItemCache() { return this.tradeCache; }
 
 	/**
 	 * Triggered once a day, regardless of whether the villager needs restocks.
