@@ -64,7 +64,7 @@ public class TradeShuffler
 		    ;
 	}
 
-	List<Factory>[] MutableCopy(List<Factory[]> layout){
+	static private List<Factory>[] MutableCopy(List<Factory[]> layout){
 		IdentityHashMap<Factory[], ArrayList<Factory>> mutablePools = new IdentityHashMap<>();
 		mutablePools.put(null, new ArrayList<>(0));
 

@@ -6,6 +6,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import tk.estecka.shiftingwares.MapTradesCache;
 
+/**
+ * Not intended to be implemented by other mods.
+ */
 public interface PersistentItemCache
 {
 	/**
@@ -21,5 +24,5 @@ public interface PersistentItemCache
 	 * This overwrite any existing item, and clears the "sold" flag of the item.
 	 */
 	void	AddCachedItem(String key, @NotNull ItemStack mapItem);
-	Optional<@NotNull ItemStack>	GetCachedItem(String key);
+	Optional<ItemStack>	GetCachedItem(String key);
 }

@@ -6,6 +6,9 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.village.TradeOffers.Factory;
 
+/**
+ * Should be implemented by mods that want to use shifting-ware's entrypoint.
+ */
 public interface ITradeLayoutProvider
 {
 	/**
