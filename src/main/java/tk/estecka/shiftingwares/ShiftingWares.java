@@ -55,6 +55,6 @@ implements ModInitializer
 	@Override
 	public void onInitialize() {
 		// Static initialization
-		LOGGER.warn("Trade rebalance is : {}", IS_EXP_TRADE_AVAILABLE?"available":"unavailable");
+		LOGGER.info("Trade-Rebalance support is {} for this version of minecraft.", IS_EXP_TRADE_AVAILABLE?"enabled":"disabled");
 	}
 }
