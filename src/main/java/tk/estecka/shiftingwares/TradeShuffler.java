@@ -3,15 +3,21 @@ package tk.estecka.shiftingwares;
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
+import net.minecraft.village.TradeOffers;
 import net.minecraft.village.TradeOffers.Factory;
+import tk.estecka.shiftingwares.TradeLayouts.VanillaTradeLayout;
+import tk.estecka.shiftingwares.api.ITradeLayoutProvider;
 import net.minecraft.village.VillagerProfession;
 
 public class TradeShuffler 
 {
+	static public final ITradeLayoutProvider VANILLA_LAYOUT  = new VanillaTradeLayout();
+
 	private final VillagerEntity villager;
 	private final boolean depletedOnly;
 
@@ -32,7 +38,19 @@ public class TradeShuffler
 		this.random = villager.getRandom();
 		this.tradeCache = ((IVillagerEntityDuck)villager).shiftingwares$GetItemCache();
 
-		this.tradeLayout = ShiftingWares.GetTradeLayout(villager);
+		this.tradeLayout = GetTradeLayout(villager);
+	}
+	
+	static public List<TradeOffers.Factory[]> GetTradeLayout(VillagerEntity villager){
+		var providers = FabricLoader.getInstance().getEntrypoints("shifting-wares", ITradeLayoutProvider.class);
+
+		for (var p : providers) {
+			var layout = p.GetTradeLayout(villager);
+			if (layout != null)
+				return layout;
+		}
+
+		return VANILLA_LAYOUT.GetTradeLayout(villager);
 	}
 
 	public void	Reroll(){
