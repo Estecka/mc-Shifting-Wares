@@ -21,7 +21,8 @@ To prevent daily rerolls from throwing away endless amounts of unsold maps, thos
 Cartographers will remember each map they sell, and offer it again it the next time the same map trade comes up.
 The gamerule `shiftingWares.allowMapReroll` (disabled by default) will allow them to forget a map, after it has been sold at least once.
 
-The map's item name, or its translation key, is used to tell apart different types of maps.
+The map's item name, (or preferably, its translation key), is used to tell apart different types of maps.
+Since 1.20.5, the `item_name` is preferred over the `custom_name`.
 
 
 ## Technical details

@@ -24,3 +24,5 @@ Initial release
 - Added an entrypoint to define villager trades from outside mods
 ## 2.1.0
 - Reimplemented Trade-Rebalance support in a backward-compatible way
+## 2.1.1
+- Updated for 1.20.5; A map's `item_name` take priority over `custom_name` if both are present.
