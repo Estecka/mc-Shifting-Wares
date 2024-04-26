@@ -17,6 +17,7 @@ Initial release
 
 ## 1.1
 - Added a gamerules that allows cartographers to regenerate maps that have been sold at least once.
+- _Regression: Restocks cause a crash if Deplete Reroll is disabled._
 
 # v2
 ## 2.0.0
@@ -24,3 +25,5 @@ Initial release
 - Added an entrypoint to define villager trades from outside mods
 ## 2.1.0
 - Reimplemented Trade-Rebalance support in a backward-compatible way
+## 2.1.1
+- Fixed a crash that would occur upon restock if Depleted Reroll is disabled.
