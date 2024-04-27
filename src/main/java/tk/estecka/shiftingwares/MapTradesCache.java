@@ -7,8 +7,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import org.jetbrains.annotations.Nullable;
+import com.mojang.serialization.Dynamic;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.MapIdComponent;
+import net.minecraft.datafixer.fix.ItemStackComponentizationFix;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -152,25 +154,33 @@ implements PersistentItemCache
 /* # Serialization                                                            */
 /******************************************************************************/
 
+	// 1.20.4 -> 1.20.5 upgrade
+	public Dynamic<?> ComponentizeLegacyItem(Dynamic<?> dynamic){
+		var optStackData = ItemStackComponentizationFix.StackData.fromDynamic(dynamic);
+		if (optStackData.isEmpty())
+			return dynamic;
+
+		var stackData = optStackData.get();
+		ItemStackComponentizationFix.fixStack(optStackData.get(), dynamic);
+		return stackData.finalize();
+	}
+
+
 	public void	ReadMapCacheFromNbt(NbtCompound nbt){
 		NbtCompound nbtcache = nbt.getCompound(MAPID_CACHE);
 		NbtList nbtsold = nbt.getList(SOLD_ITEMS, NbtElement.STRING_TYPE);
 		int format = nbt.getInt(FORMAT_KEY);
 
-		if (nbtcache != null){
-			if (format < 2){
-				String state = "Villager: " + nbt.getUuid(Entity.UUID_KEY).toString();
-				for (String key : nbtcache.getKeys())
-					state += "\n Map key:" + key;
+		if (nbtcache != null)
+		for (String key : nbtcache.getKeys()){
+			Dynamic<?> dynamic = new Dynamic<>(NbtOps.INSTANCE, nbtcache.getCompound(key));
+			if (format < 2)
+				dynamic = ComponentizeLegacyItem(dynamic);
 
-				ShiftingWares.LOGGER.error("Upgrading villager trade cache from 1.20.4 is not fully supported. These cached maps may be lost: {}", state);
-			}
-			else for (String key : nbtcache.getKeys()){
-				ItemStack.CODEC.parse(NbtOps.INSTANCE, nbtcache.getCompound(key))
-					.resultOrPartial(err -> ShiftingWares.LOGGER.error("Unabled to decode cached item! @{}\n", key, err))
-					.ifPresent( item -> this.cachedItems.put(key, item))
-					;
-			}
+			ItemStack.CODEC.parse(dynamic)
+				.resultOrPartial(err -> ShiftingWares.LOGGER.error("Unabled to decode cached item! @{}\n", key, err))
+				.ifPresent( item -> this.cachedItems.put(key, item))
+				;
 		}
 
 		if (nbtsold != null)
