@@ -1,5 +1,6 @@
 package tk.estecka.shiftingwares.mixin;
 
+import java.util.Optional;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -8,11 +9,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
+import net.minecraft.village.TradedItem;
 import net.minecraft.village.TradeOffers.SellMapFactory;
 import tk.estecka.shiftingwares.IVillagerEntityDuck;
 import tk.estecka.shiftingwares.MapTradesCache;
@@ -32,8 +33,13 @@ public abstract class SellMapFactoryMixin
 
 		if (cachedMap.isPresent()){
 			ItemStack stack = cachedMap.get();
-			ShiftingWares.LOGGER.info("Reselling previously available map #{} @ {}", FilledMapItem.getMapId(stack), this.nameKey);
-			info.setReturnValue(new TradeOffer( new ItemStack(Items.EMERALD, this.price), new ItemStack(Items.COMPASS), stack, this.maxUses, this.experience, 0.2f ));
+			ShiftingWares.LOGGER.info("Reselling previously available map #{} @ {}", MapTradesCache.GetRawMapId(stack), this.nameKey);
+			info.setReturnValue(new TradeOffer(
+				new TradedItem(Items.EMERALD, this.price),
+				Optional.of(new TradedItem(Items.COMPASS)),
+				stack,
+				this.maxUses, this.experience, 0.2f
+			));
 		}
 	}
 

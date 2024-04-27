@@ -22,13 +22,11 @@
 	"mixins": [
 		"shifting-wares.mixins.json"
 	],
+	"accessWidener" : "shifting-wares.accesswidener",
 	"depends": {
-		"minecraft": "<1.20.5",
-		"fabricloader": ">=0.15.3",
+		"minecraft": "^1.20.5",
+		"fabricloader": ">=0.15.10",
 		"fabric-api": "*",
-		"java": ">=17"
-	},
-	"recommends": {
-		"minecraft": "^1.19.4"
+		"java": ">=21"
 	}
 }

@@ -20,10 +20,16 @@ Initial release
 - _Regression: Restocks cause a crash if Deplete Reroll is disabled._
 
 # v2
-## 2.0.0
+## 2.0
 - Made some methods and types available through an API.
 - Added an entrypoint to define villager trades from outside mods
-## 2.1.0
+## 2.1
+### 2.1.0
 - Reimplemented Trade-Rebalance support in a backward-compatible way
-## 2.1.1
+### 2.1.1
 - Fixed a crash that would occur upon restock if Depleted Reroll is disabled.
+## 2.2
+- Updated for 1.20.5:
+- For caching, a map's `item_name` takes priority over the `custom_name` if both are present.
+- Placeholder trades are no longer empty. (Cosmetic change only.)
+- Added custom logic for upgrading caches from before 1.20.5

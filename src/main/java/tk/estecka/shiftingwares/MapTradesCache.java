@@ -7,14 +7,20 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import org.jetbrains.annotations.Nullable;
+import com.mojang.serialization.Dynamic;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.MapIdComponent;
+import net.minecraft.datafixer.fix.ItemStackComponentizationFix;
+import net.minecraft.datafixer.fix.ItemStackCustomNameToItemNameFix;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.NbtString;
+import net.minecraft.text.Text;
 import net.minecraft.text.TextContent;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.village.TradeOffer;
@@ -24,7 +30,7 @@ import tk.estecka.shiftingwares.api.PersistentItemCache;
 public class MapTradesCache
 implements PersistentItemCache
 {
-	static public final int DATA_FORMAT = 1;
+	static public final int DATA_FORMAT = 2;
 	static public final String FORMAT_KEY  = "shifting-wares:data_format";
 	static public final String MAPID_CACHE = "shifting-wares:created_maps";
 	static public final String SOLD_ITEMS  = "shifting-wares:sold_items";
@@ -32,29 +38,38 @@ implements PersistentItemCache
 	private final Map<String, ItemStack> cachedItems = new HashMap<String,ItemStack>();
 	private final Set<String> soldItems = new HashSet<>();
 
+	static public @Nullable Integer GetRawMapId(ItemStack stack){
+		MapIdComponent component = stack.get(DataComponentTypes.MAP_ID);
+		return (component==null) ? null : component.id();
+	}
+
 	/**
 	 * @return null if the item needs not or cannot be cached.
 	 */
-	@Nullable
-	static public String	FindCacheKey(ItemStack item){
+	static public @Nullable String	FindCacheKey(ItemStack item){
 		if (!item.isOf(Items.FILLED_MAP))
 			return null;
 
-		if (!item.hasCustomName()){
-			ShiftingWares.LOGGER.error("Unable to identify map#{} with no name:\n{}", FilledMapItem.getMapId(item), item);
+		Text name = item.get(DataComponentTypes.ITEM_NAME);
+		if (name == null){
+			name = item.get(DataComponentTypes.CUSTOM_NAME);
+			if (name != null)
+				ShiftingWares.LOGGER.warn("A map was found that uses a CUSTOM_NAME but has no ITEM_NAME: \"{}\"", name);
+		}
+
+		if (name == null){
+			ShiftingWares.LOGGER.error("Unable to identify map#{} with no name:\n{}", GetRawMapId(item), item);
 			return null;
 		}
 
-		TextContent fullName = item.getName().getContent();
-		String key;
+		TextContent fullName = name.getContent();
 		if (fullName instanceof TranslatableTextContent translatable)
-			key = translatable.getKey();
+			return translatable.getKey();
 		else {
-			ShiftingWares.LOGGER.error("Map#{} name is not a translation key: {} {}", FilledMapItem.getMapId(item), fullName.getClass(), fullName);
-			key = item.getName().getString();
+			ShiftingWares.LOGGER.error("Map#{} name is not a translation key: {} {}", GetRawMapId(item), fullName.getClass(), fullName);
+			return item.getName().getString();
 		}
 
-		return key;
 	}
 
 	/**
@@ -84,12 +99,12 @@ implements PersistentItemCache
 	}
 
 	public void	AddCachedItem(String key, ItemStack mapItem){
-		Integer neoId=FilledMapItem.getMapId(mapItem);
+		Integer neoId = GetRawMapId(mapItem);
 		if (!cachedItems.containsKey(key))
 			ShiftingWares.LOGGER.info("New map trade: #{} @ {}", neoId, key);
 		else
 		{
-			Integer oldId=FilledMapItem.getMapId(cachedItems.get(key));
+			Integer oldId = GetRawMapId(cachedItems.get(key));
 			if (soldItems.contains(key))
 				ShiftingWares.LOGGER.info("New map trade #{}->#{} @ {}", oldId, neoId, key);
 			else if (Objects.equals(neoId, oldId))
@@ -124,12 +139,12 @@ implements PersistentItemCache
 
 			if (offer.hasBeenUsed()) {
 				this.soldItems.add(cacheKey);
-				ShiftingWares.LOGGER.info("Marked map as sold: #{} @ {}", FilledMapItem.getMapId(sellItem), cacheKey);
+				ShiftingWares.LOGGER.info("Marked map as sold: #{} @ {}", GetRawMapId(sellItem), cacheKey);
 			}
 
 			var oldItem = this.GetCachedItem(cacheKey);
 			if (oldItem.isEmpty() || !ItemStack.areEqual(sellItem, oldItem.get())){
-				ShiftingWares.LOGGER.warn("Caught a map trade that wasn't properly cached: #{} @ {}", FilledMapItem.getMapId(sellItem), cacheKey);
+				ShiftingWares.LOGGER.warn("Caught a map trade that wasn't properly cached: #{} @ {}", GetRawMapId(sellItem), cacheKey);
 				this.AddCachedItem(cacheKey, sellItem);
 			}
 		}
@@ -140,14 +155,40 @@ implements PersistentItemCache
 /* # Serialization                                                            */
 /******************************************************************************/
 
+	// 1.20.4 -> 1.20.5 upgrade
+	static public Dynamic<?> ComponentizeLegacyItem(Dynamic<?> dynamic){
+		var optStackData = ItemStackComponentizationFix.StackData.fromDynamic(dynamic);
+		if (optStackData.isEmpty())
+			return dynamic;
+
+		var stackData = optStackData.get();
+		ItemStackComponentizationFix.fixStack(optStackData.get(), dynamic);
+		dynamic = stackData.finalize();
+	
+		var components = dynamic.get("components").result();
+		if (components.isPresent()){
+			dynamic = dynamic.set("components", ItemStackCustomNameToItemNameFix.fixExplorerMaps(components.get()));
+		}
+
+		return dynamic;
+	}
+
+
 	public void	ReadMapCacheFromNbt(NbtCompound nbt){
 		NbtCompound nbtcache = nbt.getCompound(MAPID_CACHE);
 		NbtList nbtsold = nbt.getList(SOLD_ITEMS, NbtElement.STRING_TYPE);
+		int format = nbt.getInt(FORMAT_KEY);
 
 		if (nbtcache != null)
 		for (String key : nbtcache.getKeys()){
-			ItemStack item = ItemStack.fromNbt(nbtcache.getCompound(key));
-			this.cachedItems.put(key, item);
+			Dynamic<?> dynamic = new Dynamic<>(NbtOps.INSTANCE, nbtcache.getCompound(key));
+			if (format < 2)
+				dynamic = ComponentizeLegacyItem(dynamic);
+
+			ItemStack.CODEC.parse(dynamic)
+				.resultOrPartial(err -> ShiftingWares.LOGGER.error("Unabled to decode cached item! @{}\n", key, err))
+				.ifPresent( item -> this.cachedItems.put(key, item))
+				;
 		}
 
 		if (nbtsold != null)
@@ -161,8 +202,12 @@ implements PersistentItemCache
 		NbtCompound nbtcache = new NbtCompound();
 		NbtList nbtsold = new NbtList();
 
-		for (var pair : this.cachedItems.entrySet())
-			nbtcache.put(pair.getKey(), pair.getValue().writeNbt(new NbtCompound()));
+		for (var pair : this.cachedItems.entrySet()){
+			ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, pair.getValue())
+				.resultOrPartial(err -> ShiftingWares.LOGGER.error("Unable to encode cached item! @{}\n{}", pair.getKey(), err))
+				.ifPresent(nbtItem -> nbtcache.put(pair.getKey(), nbtItem))
+				;
+		}
 		for (String key : this.soldItems)
 			nbtsold.add(NbtString.of(key));
 
