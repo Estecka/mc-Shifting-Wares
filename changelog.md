@@ -31,3 +31,4 @@ Initial release
 ### 2.1.2
 - Updated for 1.20.5:
 	- A map's `item_name` take priority over `custom_name` if both are present.
+	- Placeholder are no longer empty. (Cosmetic change only.)
