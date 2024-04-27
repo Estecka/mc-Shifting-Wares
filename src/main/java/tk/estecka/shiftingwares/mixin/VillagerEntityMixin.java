@@ -55,7 +55,7 @@ implements IVillagerEntityDuck
 		if (IsDailyRerollEnabled() || IsDepleteRerollEnabled())
 			return EMPTY;
 		else
-			return original.call();
+			return original.call(me);
 	}
 
 	/**
@@ -71,7 +71,7 @@ implements IVillagerEntityDuck
 			return EMPTY;
 		}
 		else
-			return original.call();
+			return original.call(me);
 	}
 
 	/**
