@@ -158,9 +158,9 @@ implements PersistentItemCache
 
 		if (nbtcache != null)
 		for (String key : nbtcache.getKeys()){
-			ItemStack.CODEC.decode(NbtOps.INSTANCE, nbtcache.getCompound(key))
-				.resultOrPartial(err -> ShiftingWares.LOGGER.error("Unabled to decode cached item!"))
-				.ifPresent( item -> this.cachedItems.put(key, item.getFirst()) )
+			ItemStack.CODEC.parse(NbtOps.INSTANCE, nbtcache.getCompound(key))
+				.resultOrPartial(err -> ShiftingWares.LOGGER.error("Unabled to decode cached item! @{}\n", key, err))
+				.ifPresent( item -> this.cachedItems.put(key, item))
 				;
 		}
 
@@ -177,7 +177,7 @@ implements PersistentItemCache
 
 		for (var pair : this.cachedItems.entrySet()){
 			ItemStack.CODEC.encodeStart(NbtOps.INSTANCE, pair.getValue())
-				.resultOrPartial(err -> ShiftingWares.LOGGER.error("Unable to encode cached item!\n{}", err))
+				.resultOrPartial(err -> ShiftingWares.LOGGER.error("Unable to encode cached item! @{}\n{}", pair.getKey(), err))
 				.ifPresent(nbtItem -> nbtcache.put(pair.getKey(), nbtItem))
 				;
 		}
