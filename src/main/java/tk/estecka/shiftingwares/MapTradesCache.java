@@ -27,7 +27,7 @@ import tk.estecka.shiftingwares.api.PersistentItemCache;
 public class MapTradesCache
 implements PersistentItemCache
 {
-	static public final int DATA_FORMAT = 1;
+	static public final int DATA_FORMAT = 2;
 	static public final String FORMAT_KEY  = "shifting-wares:data_format";
 	static public final String MAPID_CACHE = "shifting-wares:created_maps";
 	static public final String SOLD_ITEMS  = "shifting-wares:sold_items";
@@ -155,13 +155,22 @@ implements PersistentItemCache
 	public void	ReadMapCacheFromNbt(NbtCompound nbt){
 		NbtCompound nbtcache = nbt.getCompound(MAPID_CACHE);
 		NbtList nbtsold = nbt.getList(SOLD_ITEMS, NbtElement.STRING_TYPE);
+		int format = nbt.getInt(FORMAT_KEY);
 
-		if (nbtcache != null)
-		for (String key : nbtcache.getKeys()){
-			ItemStack.CODEC.parse(NbtOps.INSTANCE, nbtcache.getCompound(key))
-				.resultOrPartial(err -> ShiftingWares.LOGGER.error("Unabled to decode cached item! @{}\n", key, err))
-				.ifPresent( item -> this.cachedItems.put(key, item))
-				;
+		if (nbtcache != null){
+			if (format < 2){
+				String state = "Villager: " + nbt.getUuid(Entity.UUID_KEY).toString();
+				for (String key : nbtcache.getKeys())
+					state += "\n Map key:" + key;
+
+				ShiftingWares.LOGGER.error("Upgrading villager trade cache from 1.20.4 is not fully supported. These cached maps may be lost: {}", state);
+			}
+			else for (String key : nbtcache.getKeys()){
+				ItemStack.CODEC.parse(NbtOps.INSTANCE, nbtcache.getCompound(key))
+					.resultOrPartial(err -> ShiftingWares.LOGGER.error("Unabled to decode cached item! @{}\n", key, err))
+					.ifPresent( item -> this.cachedItems.put(key, item))
+					;
+			}
 		}
 
 		if (nbtsold != null)
