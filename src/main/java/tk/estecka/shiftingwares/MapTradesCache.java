@@ -11,6 +11,7 @@ import com.mojang.serialization.Dynamic;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.datafixer.fix.ItemStackComponentizationFix;
+import net.minecraft.datafixer.fix.ItemStackCustomNameToItemNameFix;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -155,14 +156,21 @@ implements PersistentItemCache
 /******************************************************************************/
 
 	// 1.20.4 -> 1.20.5 upgrade
-	public Dynamic<?> ComponentizeLegacyItem(Dynamic<?> dynamic){
+	static public Dynamic<?> ComponentizeLegacyItem(Dynamic<?> dynamic){
 		var optStackData = ItemStackComponentizationFix.StackData.fromDynamic(dynamic);
 		if (optStackData.isEmpty())
 			return dynamic;
 
 		var stackData = optStackData.get();
 		ItemStackComponentizationFix.fixStack(optStackData.get(), dynamic);
-		return stackData.finalize();
+		dynamic = stackData.finalize();
+	
+		var components = dynamic.get("components").result();
+		if (components.isPresent()){
+			dynamic = dynamic.set("components", ItemStackCustomNameToItemNameFix.fixExplorerMaps(components.get()));
+		}
+
+		return dynamic;
 	}
 
 
