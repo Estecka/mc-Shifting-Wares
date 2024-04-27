@@ -28,7 +28,7 @@ Initial release
 - Reimplemented Trade-Rebalance support in a backward-compatible way
 ### 2.1.1
 - Fixed a crash that would occur upon restock if Depleted Reroll is disabled.
-### 2.1.2
+## 2.2
 - Updated for 1.20.5:
-	- A map's `item_name` take priority over `custom_name` if both are present.
-	- Placeholder are no longer empty. (Cosmetic change only.)
+	- For caching, a map's `item_name` take priority over the `custom_name` if both are present.
+	- Placeholder trades are no longer empty. (Cosmetic change only.)
