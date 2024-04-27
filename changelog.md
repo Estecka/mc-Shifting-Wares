@@ -30,5 +30,6 @@ Initial release
 - Fixed a crash that would occur upon restock if Depleted Reroll is disabled.
 ## 2.2
 - Updated for 1.20.5:
-	- For caching, a map's `item_name` take priority over the `custom_name` if both are present.
-	- Placeholder trades are no longer empty. (Cosmetic change only.)
+- For caching, a map's `item_name` takes priority over the `custom_name` if both are present.
+- Placeholder trades are no longer empty. (Cosmetic change only.)
+- Added custom logic for upgrading caches from before 1.20.5
