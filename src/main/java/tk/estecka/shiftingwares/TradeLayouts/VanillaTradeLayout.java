@@ -16,7 +16,7 @@ import tk.estecka.shiftingwares.api.ITradeLayoutProvider;
 public class VanillaTradeLayout
 implements ITradeLayoutProvider
 {
-	static public final Identifier TRADE_REBALANCE_FLAGID = new Identifier("minecraft", "trade_rebalance");
+	static public final Identifier TRADE_REBALANCE_FLAGID = Identifier.of("minecraft", "trade_rebalance");
 	static public final boolean IS_EXP_TRADE_AVAILABLE;
 
 	static {

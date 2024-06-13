@@ -14,3 +14,7 @@ Current master
 #### Possible Workaround:
 - `ItemStack::writeToNbt` and `readFromNbt` were removed or changed: Use `ItemStack::CODEC` instead.
 - Trade offers no longer support selling or buying air: Use some placeholder items instead.
+
+### 1.21.0
+#### No Workaround
+- `getRandom()` was moved from `LivingEntity` to its parent class `Entity`. No code change required, but needs recompilation.

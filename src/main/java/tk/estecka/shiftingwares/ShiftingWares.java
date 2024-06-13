@@ -23,7 +23,7 @@ implements ModInitializer
 {
 	static public final Logger LOGGER = LoggerFactory.getLogger("Shifting-Wares");
 
-	static public final CustomGameRuleCategory RULE_CATTEGORY = new CustomGameRuleCategory(new Identifier("shifting-wares","gamerules"), Text.translatable("gamerule.category.shiftingwares").formatted(Formatting.BOLD, Formatting.YELLOW));
+	static public final CustomGameRuleCategory RULE_CATTEGORY = new CustomGameRuleCategory(Identifier.of("shifting-wares","gamerules"), Text.translatable("gamerule.category.shiftingwares").formatted(Formatting.BOLD, Formatting.YELLOW));
 
 	static public final GameRules.Key<BooleanRule> DAILY_RULE    = GameRuleRegistry.register("shiftingWares.dailyReroll",    RULE_CATTEGORY, GameRuleFactory.createBooleanRule(true));
 	static public final GameRules.Key<BooleanRule> DEPLETED_RULE = GameRuleRegistry.register("shiftingWares.depleteReroll",  RULE_CATTEGORY, GameRuleFactory.createBooleanRule(true));
