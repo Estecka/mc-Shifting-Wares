@@ -28,6 +28,8 @@ Initial release
 - Reimplemented Trade-Rebalance support in a backward-compatible way
 ### 2.1.1
 - Fixed a crash that would occur upon restock if Depleted Reroll is disabled.
+### 2.1.2 (Branched of v2.2)
+- Custom serialization is no longer callable from the render thread.
 ## 2.2
 ### 2.2.0
 - Updated for MC 1.20.5
@@ -36,3 +38,6 @@ Initial release
 - Added custom logic for upgrading caches from before 1.20.5
 ### 2.2.1
 - Updated for MC 1.21
+### 2.2.2
+- Custom serialization is no longer callable from the render thread.
+This boost performances when using Fresh Animations
