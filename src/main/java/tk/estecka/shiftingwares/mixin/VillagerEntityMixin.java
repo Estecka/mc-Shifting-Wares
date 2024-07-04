@@ -91,14 +91,18 @@ implements IVillagerEntityDuck
 
 	@Inject ( method="writeCustomDataToNbt", at=@At("TAIL"))
 	void	WriteCachedMapsToNbt(NbtCompound nbt, CallbackInfo info){
-		this.tradeCache.FillCacheFromTrades(villager.getOffers());
-		this.tradeCache.WriteMapCacheToNbt(nbt);
+		if (!villager.getWorld().isClient()){
+			this.tradeCache.FillCacheFromTrades(villager.getOffers());
+			this.tradeCache.WriteMapCacheToNbt(nbt);
+		}
 	}
 
 	@Inject ( method="readCustomDataFromNbt", at=@At("TAIL"))
 	void	ReadCachedMapsFromNbt(NbtCompound nbt, CallbackInfo info){
-		this.tradeCache.ReadMapCacheFromNbt(nbt);
-		this.tradeCache.FillCacheFromTrades(villager.getOffers());
+		if (!villager.getWorld().isClient()){
+			this.tradeCache.ReadMapCacheFromNbt(nbt);
+			this.tradeCache.FillCacheFromTrades(villager.getOffers());
+		}
 	}
 
 }
