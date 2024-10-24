@@ -11,7 +11,7 @@ Initial release
 **This version contains a critical bug and should not be used**
 - Introduced placeholder trades. Fixes cartographers having trouble generating high-level trades in worlds with no structures.
 ### 1.0.4
-- Fixes mapping issue affecting 1.0.2 and 1.0.3
+- Fixes mapping issue affecting v1.0.2 and v1.0.3
 ### 1.0.5
 - The level of each trade slot is evaluated more accurately for every job.
 
@@ -32,12 +32,15 @@ Initial release
 - Custom serialization is no longer callable from the render thread.
 ## 2.2
 ### 2.2.0
-- Updated for MC 1.20.5
+- Updated for MC 1.20.5
 - For caching, a map's `item_name` takes priority over the `custom_name` if both are present.
 - Placeholder trades are no longer empty. (Cosmetic change only.)
-- Added custom logic for upgrading caches from before 1.20.5
+- Added custom logic for upgrading caches from before MC 1.20.5
 ### 2.2.1
-- Updated for MC 1.21
+- Updated for MC 1.21
 ### 2.2.2
 - Custom serialization is no longer callable from the render thread.
 This boost performances when using Fresh Animations
+### 2.2.3
+- Updated for MC 1.21.2
+- Starting MC 1.21.2, placeholder trades now use `item_model`'s to look empty again.
