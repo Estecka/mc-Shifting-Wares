@@ -32,13 +32,16 @@ implements ModInitializer
 	static public final TradeOffer PLACEHOLDER_TRADE;
 	
 	static {
-		TradedItem fake_void = new TradedItem(Items.EMERALD)
-			.withComponents( builder -> builder.add(DataComponentTypes.HIDE_TOOLTIP, Unit.INSTANCE) )
-			;
+		TradedItem fake_air = new TradedItem(Items.EMERALD)
+			.withComponents( builder -> builder
+				.add(DataComponentTypes.ITEM_NAME, Text.literal("Unobtainium"))
+				.add(DataComponentTypes.HIDE_TOOLTIP, Unit.INSTANCE)
+				.add(DataComponentTypes.ITEM_MODEL, Identifier.ofVanilla("air"))
+			);
 
 		PLACEHOLDER_TRADE = new TradeOffer(
-			fake_void,
-			fake_void.itemStack(),
+			fake_air,
+			fake_air.itemStack(),
 			0, 0, 0
 		);
 	}

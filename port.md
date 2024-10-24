@@ -16,5 +16,9 @@ Current master
 - Trade offers no longer support selling or buying air: Use some placeholder items instead.
 
 ### 1.21.0
-#### No Workaround
+#### No Workaround:
 - `getRandom()` was moved from `LivingEntity` to its parent class `Entity`. No code change required, but needs recompilation.
+
+### 1.21.2
+#### No workaround:
+- `getGamerules()` was moved from `World` to its child class `ServerWorld`. Code change can be avoided by casting, but recompilation is still needed.

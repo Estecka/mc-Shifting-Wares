@@ -2,6 +2,7 @@ package tk.estecka.shiftingwares.mixin;
 
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import tk.estecka.shiftingwares.IVillagerEntityDuck;
@@ -26,8 +27,8 @@ implements IVillagerEntityDuck
 	private final VillagerEntity villager = (VillagerEntity)(Object)this;
 	private final MapTradesCache tradeCache = new MapTradesCache();
 
-	private boolean	IsDailyRerollEnabled()   { return villager.getWorld().getGameRules().get(ShiftingWares.DAILY_RULE   ).get(); }
-	private boolean	IsDepleteRerollEnabled() { return villager.getWorld().getGameRules().get(ShiftingWares.DEPLETED_RULE).get(); }
+	private boolean	IsDailyRerollEnabled()   { return villager.getServer().getOverworld().getGameRules().get(ShiftingWares.DAILY_RULE   ).get(); }
+	private boolean	IsDepleteRerollEnabled() { return villager.getServer().getOverworld().getGameRules().get(ShiftingWares.DEPLETED_RULE).get(); }
 
 	public MapTradesCache shiftingwares$GetItemCache() { return this.tradeCache; }
 
