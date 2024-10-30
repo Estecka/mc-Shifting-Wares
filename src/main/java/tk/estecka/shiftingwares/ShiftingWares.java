@@ -4,8 +4,10 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.gamerule.v1.CustomGameRuleCategory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
+import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Items;
+import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -32,12 +34,13 @@ implements ModInitializer
 	static public final TradeOffer PLACEHOLDER_TRADE;
 	
 	static {
-		TradedItem fake_air = new TradedItem(Items.EMERALD)
-			.withComponents( builder -> builder
-				.add(DataComponentTypes.ITEM_NAME, Text.literal("Unobtainium"))
-				.add(DataComponentTypes.HIDE_TOOLTIP, Unit.INSTANCE)
-				.add(DataComponentTypes.ITEM_MODEL, Identifier.ofVanilla("air"))
-			);
+		TradedItem fake_air = new TradedItem(Items.EMERALD).withComponents( builder -> {
+			builder.add(DataComponentTypes.ITEM_NAME, Text.literal("Unobtainium"));
+			builder.add(DataComponentTypes.HIDE_TOOLTIP, Unit.INSTANCE);
+			if (Registries.DATA_COMPONENT_TYPE.containsId(Identifier.ofVanilla("item_model"))) // 1.21.0 compatibility
+				builder.add(DataComponentTypes.ITEM_MODEL, Identifier.ofVanilla("air"));
+			return builder;
+		});
 
 		PLACEHOLDER_TRADE = new TradeOffer(
 			fake_air,

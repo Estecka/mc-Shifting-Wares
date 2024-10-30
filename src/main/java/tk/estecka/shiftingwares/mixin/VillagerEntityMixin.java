@@ -27,8 +27,8 @@ implements IVillagerEntityDuck
 	private final VillagerEntity villager = (VillagerEntity)(Object)this;
 	private final MapTradesCache tradeCache = new MapTradesCache();
 
-	private boolean	IsDailyRerollEnabled()   { return villager.getServer().getOverworld().getGameRules().get(ShiftingWares.DAILY_RULE   ).get(); }
-	private boolean	IsDepleteRerollEnabled() { return villager.getServer().getOverworld().getGameRules().get(ShiftingWares.DEPLETED_RULE).get(); }
+	private boolean	IsDailyRerollEnabled()   { return villager.getServer().getGameRules().get(ShiftingWares.DAILY_RULE   ).get(); }
+	private boolean	IsDepleteRerollEnabled() { return villager.getServer().getGameRules().get(ShiftingWares.DEPLETED_RULE).get(); }
 
 	public MapTradesCache shiftingwares$GetItemCache() { return this.tradeCache; }
 

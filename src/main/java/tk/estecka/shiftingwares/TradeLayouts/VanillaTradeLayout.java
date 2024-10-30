@@ -16,13 +16,17 @@ import tk.estecka.shiftingwares.api.ITradeLayoutProvider;
 public class VanillaTradeLayout
 implements ITradeLayoutProvider
 {
-	static public final Identifier TRADE_REBALANCE_FLAGID = Identifier.of("minecraft", "trade_rebalance");
+	/**
+	 * This is a leftover from 1.20.x, which provided backward compatibility
+	 * for versions without that experimental feature. Although the check is
+	 * currently useless, it's expected to become useful again whenever that
+	 * feature is removed.
+	 */
 	static public final boolean IS_EXP_TRADE_AVAILABLE;
-
 	static {
 		var featureSet = FeatureFlags.FEATURE_MANAGER.getFeatureSet();
 		var featureIds = FeatureFlags.FEATURE_MANAGER.toId(featureSet);
-		IS_EXP_TRADE_AVAILABLE = featureIds.contains(TRADE_REBALANCE_FLAGID);
+		IS_EXP_TRADE_AVAILABLE = featureIds.contains(Identifier.ofVanilla("trade_rebalance"));
 	}
 
 	public List<Factory[]>	GetTradeLayout(VillagerEntity villager){

@@ -44,3 +44,5 @@ This boost performances when using Fresh Animations
 ### 2.2.3
 - Updated for MC 1.21.2
 - Starting MC 1.21.2, placeholder trades now use `item_model`'s to look empty again.
+### 2.2.4
+- Made previous port backward compatible with MC 1.21.0

@@ -81,7 +81,7 @@ implements PersistentItemCache
 		{
 			MapTradesCache cache =  villager.shiftingwares$GetItemCache();
 			Optional<ItemStack> cachedMap = cache.GetCachedItem(cacheKey);
-			if (cachedMap.isEmpty() || (cache.HasSold(cacheKey) && entity.getServer().getOverworld().getGameRules().getBoolean(ShiftingWares.MAP_RULE)))
+			if (cachedMap.isEmpty() || (cache.HasSold(cacheKey) && entity.getServer().getGameRules().getBoolean(ShiftingWares.MAP_RULE)))
 				return Optional.empty();
 			else
 				return cachedMap;
