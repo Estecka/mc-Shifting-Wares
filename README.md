@@ -1,8 +1,13 @@
 # Shifting Wares
 
-Causes villager to occasionally re-roll their trade offers, making them more flexible and less exploitable.
+Causes villager to occasionally re-roll their trade offers, up to three times a day.
+This effect is the most noticeable on professions that can sell enchanted items; a single one of these villagers will be able to offer a much greater variety of wares over time.
 
-The most noticeable effects will be felt on any profession able to sell enchanted items; a single of these villager will be able to offer a much greater variety of wares over time.
+This aims to reduce the benefits of exploitative playstyle, while increasing the viability of more serendipitous playstyles.
+
+While it's still possible to get the trade you want by repeatedly breaking a villager's workstation, the benefits of doing so become *very* short lived. Waiting for a natural reroll is probably a better use of your time.
+
+Because trades no longer make the identity of a villager, they become much easier to replace if they die, so you don't need to care as much about their safety. You can let them roam around freely with little risk.
 
 ## Triggers
 
