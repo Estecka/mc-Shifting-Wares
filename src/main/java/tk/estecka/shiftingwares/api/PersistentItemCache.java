@@ -8,6 +8,9 @@ import tk.estecka.shiftingwares.MapTradesCache;
 
 /**
  * Not intended to be implemented by other mods.
+ * 
+ * This is the old way of preventing trade factories from generating never-sold
+ * maps. If possible use {@link IShiftingTradeFactory} instead.
  */
 public interface PersistentItemCache
 {

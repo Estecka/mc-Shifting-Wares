@@ -2,13 +2,12 @@ package tk.estecka.shiftingwares.mixin;
 
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
-import tk.estecka.shiftingwares.IVillagerEntityDuck;
 import tk.estecka.shiftingwares.MapTradesCache;
 import tk.estecka.shiftingwares.ShiftingWares;
 import tk.estecka.shiftingwares.TradeShuffler;
+import tk.estecka.shiftingwares.duck.IVillagerEntityDuck;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;

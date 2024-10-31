@@ -26,6 +26,7 @@ import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import tk.estecka.shiftingwares.api.PersistentItemCache;
+import tk.estecka.shiftingwares.duck.IVillagerEntityDuck;
 
 public class MapTradesCache
 implements PersistentItemCache

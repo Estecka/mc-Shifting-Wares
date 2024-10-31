@@ -12,6 +12,7 @@ import net.minecraft.village.TradeOffers;
 import net.minecraft.village.TradeOffers.Factory;
 import tk.estecka.shiftingwares.TradeLayouts.VanillaTradeLayout;
 import tk.estecka.shiftingwares.api.ITradeLayoutProvider;
+import tk.estecka.shiftingwares.duck.IVillagerEntityDuck;
 import net.minecraft.village.VillagerProfession;
 
 public class TradeShuffler 
@@ -36,7 +37,7 @@ public class TradeShuffler
 		this.offers = villager.getOffers();
 		this.job = villager.getVillagerData().getProfession();
 		this.random = villager.getRandom();
-		this.tradeCache = ((IVillagerEntityDuck)villager).shiftingwares$GetItemCache();
+		this.tradeCache = IVillagerEntityDuck.Of(villager).shiftingwares$GetItemCache();
 
 		this.tradeLayout = GetTradeLayout(villager);
 	}
