@@ -67,11 +67,19 @@ public class TradeShuffler
 
 		tradeCache.FillCacheFromTrades(offers);
 
-		// Fix uninitialized trades
+		// Fix uninitialized trades, and update used trades.
 		// TODO: handle map trades differently
-		for (TradeOffer offer : offers)
-			if (ITradeOfferDuck.Of(offer).shiftingwares$GetTradeData() == null)
-				ITradeOfferDuck.Of(offer).shiftingwares$SetTradeData(new ShiftingTradeData());
+		for (TradeOffer offer : offers){
+			ITradeOfferDuck offerMixin = ITradeOfferDuck.Of(offer);
+			ShiftingTradeData data = offerMixin.shiftingwares$GetTradeData();
+			if (data == null) {
+				data = new ShiftingTradeData();
+				offerMixin.shiftingwares$SetTradeData(data);
+			}
+
+			if (offer.hasBeenUsed())
+				data.isPersistent = false;
+		}
 
 		// Trim superfluous trades
 		for (int i=offers.size()-1; tradeLayout.size()<=i; --i)
