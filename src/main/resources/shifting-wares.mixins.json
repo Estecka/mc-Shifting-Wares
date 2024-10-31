@@ -5,6 +5,7 @@
 	"mixins": [
 		"SellMapFactoryMixin",
 		"TradeOfferMixin",
+		"TradeOffersFactoryMixin",
 		"VillagerEntityMixin"
 	],
 	"injectors": {

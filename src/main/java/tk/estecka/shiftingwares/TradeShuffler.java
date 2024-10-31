@@ -1,17 +1,22 @@
 package tk.estecka.shiftingwares;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Set;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.village.TradeOffers.Factory;
 import tk.estecka.shiftingwares.TradeLayouts.VanillaTradeLayout;
+import tk.estecka.shiftingwares.api.IShiftingTradeFactory;
 import tk.estecka.shiftingwares.api.ITradeLayoutProvider;
+import tk.estecka.shiftingwares.duck.ITradeOfferDuck;
 import tk.estecka.shiftingwares.duck.IVillagerEntityDuck;
 import net.minecraft.village.VillagerProfession;
 
@@ -62,6 +67,12 @@ public class TradeShuffler
 
 		tradeCache.FillCacheFromTrades(offers);
 
+		// Fix uninitialized trades
+		// TODO: handle map trades differently
+		for (TradeOffer offer : offers)
+			if (ITradeOfferDuck.Of(offer).shiftingwares$GetTradeData() == null)
+				ITradeOfferDuck.Of(offer).shiftingwares$SetTradeData(new ShiftingTradeData());
+
 		// Trim superfluous trades
 		for (int i=offers.size()-1; tradeLayout.size()<=i; --i)
 			if (shouldReroll(i))
@@ -77,10 +88,14 @@ public class TradeShuffler
 	}
 
 	public boolean	shouldReroll(int tradeIndex){
-		return !depletedOnly 
-		    || offers.size() <= tradeIndex
-		    || offers.get(tradeIndex).isDisabled()
-		    ;
+		if (offers.size() <= tradeIndex)
+			return true;
+		
+		TradeOffer offer = offers.get(tradeIndex);
+		if (ITradeOfferDuck.Of(offer).shiftingwares$GetTradeData().isPersistent)
+			return false;
+
+		return !this.depletedOnly || offer.isDisabled();
 	}
 
 	static private List<Factory>[] MutableCopy(List<Factory[]> layout){
@@ -106,18 +121,36 @@ public class TradeShuffler
 
 	private void	DuplicataAwareReroll(){
 		List<Factory>[] mutableLayout = MutableCopy(this.tradeLayout);
+		Set<Identifier> activeTrades = new HashSet<>();
 		boolean missingSome = false;
+
+		for (int i=0; i<offers.size(); ++i)
+		if  (!shouldReroll(i)) {
+			ShiftingTradeData data = ITradeOfferDuck.Of(offers.get(i)).shiftingwares$GetTradeData();
+			if (data.tradeId != null)
+				activeTrades.add(data.tradeId);
+		}
 
 		for (int i=0; i<offers.size(); ++i) 
 		if (shouldReroll(i))
 		{
-			var pool = mutableLayout[i];
+			List<Factory> pool = mutableLayout[i];
 			TradeOffer offer = null;
 
 			while (offer == null && !pool.isEmpty()) {
 				int roll = random.nextInt(pool.size());
-				offer = pool.get(roll).create(villager, random);
+				Factory factory = pool.get(roll);
 				pool.remove(roll);
+
+				Identifier tradeId = IShiftingTradeFactory.Of(factory).shiftingwares$GetTradeId();
+				if (tradeId == null || !activeTrades.contains(tradeId)){
+					offer = factory.create(villager, random);
+					if (offer != null){
+						ShiftingTradeData.FinalizeTrade(offer, factory);
+						if (tradeId != null)
+							activeTrades.add(tradeId);
+					}
+				}
 			}
 			if (offer == null){
 				offer = ShiftingWares.PLACEHOLDER_TRADE;

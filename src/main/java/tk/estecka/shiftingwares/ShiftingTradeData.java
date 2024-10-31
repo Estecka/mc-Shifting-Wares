@@ -2,6 +2,7 @@ package tk.estecka.shiftingwares;
 
 import net.minecraft.util.Identifier;
 import net.minecraft.village.TradeOffer;
+import net.minecraft.village.TradeOffers;
 import tk.estecka.shiftingwares.api.IShiftingTradeFactory;
 import tk.estecka.shiftingwares.duck.ITradeOfferDuck;
 
@@ -11,7 +12,12 @@ public class ShiftingTradeData
 	public boolean isPersistent = false;
 	public Identifier tradeId = null;
 
-	static public void InitializeTrade(TradeOffer offer, IShiftingTradeFactory factoryData){
+	/**
+	 * Should be called immediately after a factory has produced a new trade.
+	 * TODO: villager level-up
+	 */
+	static public void FinalizeTrade(TradeOffer offer, TradeOffers.Factory factory){
+		IShiftingTradeFactory factoryData = IShiftingTradeFactory.Of(factory);
 		ShiftingTradeData data = new ShiftingTradeData();
 		data.isPersistent = factoryData.shiftingwares$IsItemPersistent();
 		data.tradeId = factoryData.shiftingwares$GetTradeId();

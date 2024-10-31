@@ -2,24 +2,17 @@ package tk.estecka.shiftingwares.api;
 
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.util.Identifier;
-import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
-import tk.estecka.shiftingwares.ShiftingTradeData;
 
 /**
  * Injected into {@link net.minecraft.village.TradeOffers.Factory}. Modded trade
  * factories may override these methods to gain more control on how their trades
- * should be rerolled. Such factories MUST apply {@link #FinalizeTrade} to their
- * output in order for this to take effect.
+ * should be rerolled.
  */
 public interface IShiftingTradeFactory
 {
 	static public IShiftingTradeFactory Of(TradeOffers.Factory factory){
 		return (IShiftingTradeFactory)factory;
-	}
-
-	static public void FinalizeTrade(TradeOffer offer, IShiftingTradeFactory factory){
-		ShiftingTradeData.InitializeTrade(offer, factory);
 	}
 
 	/**
