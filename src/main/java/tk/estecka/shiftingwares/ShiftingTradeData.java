@@ -1,5 +1,7 @@
 package tk.estecka.shiftingwares;
+
 import java.util.Optional;
+import org.jetbrains.annotations.Nullable;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.Identifier;
@@ -19,7 +21,7 @@ public class ShiftingTradeData
 		.apply(instance, ShiftingTradeData::new)
 	);
 
-	public Identifier tradeId = null;
+	public @Nullable Identifier tradeId = null;
 	public boolean isPersistent = false;
 	public boolean wasNeverUsed = true;
 

@@ -97,6 +97,14 @@ public class TradeShuffler
 		return !this.depletedOnly || offer.isDisabled();
 	}
 
+	/**
+	 * Find trades  that *should* be persistent, but were not marked as such  by
+	 * their factories. This may happen if:
+	 * - ShiftingWares  has been installed  for the first time  on a world where
+	 * existing villagers were already selling maps.
+	 * - Another mod uses  a custom  map trade factory, but does not communicate
+	 * it to ShiftingWares.
+	 */
 	static private void FixTradeData(ShiftingTradeData data, ItemStack sellItem){
 		if (sellItem.contains(DataComponentTypes.MAP_ID)
 		&& !data.isPersistent

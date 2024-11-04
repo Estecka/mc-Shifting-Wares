@@ -27,12 +27,9 @@ public interface IShiftingTradeFactory
 	/**
 	 * This will be used  to associate  a trade offer  to its factory, and avoid
 	 * trade duplicata when rerolling. This should be set for persistent trades,
-	 * else  the villager's offers  may get clogged up  whith multiple copies of
-	 * the same item, that won't easily go away.
-	 * Different  factories  can use  the same  identifier, in  which  case  the
-	 * villager can only have an offer. Using this on non-persistent trades will
-	 * also prevent them from generating the duplicatas that often arise during
-	 * depleted-rerolls.
+	 * else  the villager's offers  may get clogged up  whith repeated copies of
+	 * persistent  trades. Using this on  non-persistent trades  will also  help
+	 * preventing duplicatas from being generated during depleted-rerolls.
 	 */
 	public default @Nullable Identifier shiftingwares$GetTradeId(){
 		return null;
