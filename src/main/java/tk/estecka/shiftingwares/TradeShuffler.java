@@ -19,7 +19,6 @@ import tk.estecka.shiftingwares.TradeLayouts.VanillaTradeLayout;
 import tk.estecka.shiftingwares.api.IShiftingTradeFactory;
 import tk.estecka.shiftingwares.api.ITradeLayoutProvider;
 import tk.estecka.shiftingwares.duck.ITradeOfferDuck;
-import tk.estecka.shiftingwares.duck.IVillagerEntityDuck;
 import net.minecraft.village.VillagerProfession;
 
 public class TradeShuffler 
@@ -34,7 +33,6 @@ public class TradeShuffler
 	private final Random random;
 	private final TradeOfferList offers;
 	private final List<Factory[]> tradeLayout;
-	private final MapTradesCache tradeCache;
 
 	public TradeShuffler(VillagerEntity villager, boolean depletedOnly)
 	{
@@ -44,7 +42,6 @@ public class TradeShuffler
 		this.offers = villager.getOffers();
 		this.job = villager.getVillagerData().getProfession();
 		this.random = villager.getRandom();
-		this.tradeCache = IVillagerEntityDuck.Of(villager).shiftingwares$GetItemCache();
 
 		this.tradeLayout = GetTradeLayout(villager);
 	}
@@ -67,8 +64,6 @@ public class TradeShuffler
 			return;
 		}
 
-		tradeCache.FillCacheFromTrades(offers);
-
 		// Fix uninitialized trades, and update used trades.
 		// TODO: handle map trades differently
 		for (TradeOffer offer : offers){
@@ -88,8 +83,6 @@ public class TradeShuffler
 			offers.add(ShiftingWares.PLACEHOLDER_TRADE);
 
 		DuplicataAwareReroll();
-
-		tradeCache.FillCacheFromTrades(offers);
 	}
 
 	public boolean	shouldReroll(int tradeIndex){
