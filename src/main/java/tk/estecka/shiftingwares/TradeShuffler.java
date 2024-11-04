@@ -6,7 +6,9 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
@@ -70,13 +72,8 @@ public class TradeShuffler
 		// Fix uninitialized trades, and update used trades.
 		// TODO: handle map trades differently
 		for (TradeOffer offer : offers){
-			ITradeOfferDuck offerMixin = ITradeOfferDuck.Of(offer);
-			ShiftingTradeData data = offerMixin.shiftingwares$GetTradeData();
-			if (data == null) {
-				data = new ShiftingTradeData();
-				offerMixin.shiftingwares$SetTradeData(data);
-			}
-
+			ShiftingTradeData data = ITradeOfferDuck.Of(offer).shiftingwares$GetTradeData();
+			FixTradeData(data, offer.getSellItem());
 			if (offer.hasBeenUsed())
 				data.wasNeverUsed = false;
 		}
@@ -105,6 +102,15 @@ public class TradeShuffler
 			return false;
 
 		return !this.depletedOnly || offer.isDisabled();
+	}
+
+	static private void FixTradeData(ShiftingTradeData data, ItemStack sellItem){
+		if (sellItem.contains(DataComponentTypes.MAP_ID)
+		&& !data.isPersistent
+		){
+			data.isPersistent = true;
+			ShiftingWares.LOGGER.warn("Forcibly marked a trade offer as persistent due to having a map Id:\n{}", sellItem);
+		}
 	}
 
 	static private List<Factory>[] MutableCopy(List<Factory[]> layout){
