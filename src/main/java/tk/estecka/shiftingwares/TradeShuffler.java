@@ -78,7 +78,7 @@ public class TradeShuffler
 			}
 
 			if (offer.hasBeenUsed())
-				data.isPersistent = false;
+				data.wasNeverUsed = false;
 		}
 
 		// Trim superfluous trades
@@ -100,7 +100,8 @@ public class TradeShuffler
 			return true;
 		
 		TradeOffer offer = offers.get(tradeIndex);
-		if (ITradeOfferDuck.Of(offer).shiftingwares$GetTradeData().isPersistent)
+		ShiftingTradeData data = ITradeOfferDuck.Of(offer).shiftingwares$GetTradeData();
+		if (data.isPersistent && data.wasNeverUsed)
 			return false;
 
 		return !this.depletedOnly || offer.isDisabled();
@@ -155,10 +156,14 @@ public class TradeShuffler
 					offer = factory.create(villager, random);
 					if (offer != null){
 						ShiftingTradeData.FinalizeTrade(offer, factory);
-						if (tradeId != null)
+						if (tradeId != null){
 							activeTrades.add(tradeId);
+							ShiftingWares.LOGGER.warn("Added trade: {}", tradeId);
+						}
 					}
 				}
+				else
+					ShiftingWares.LOGGER.warn("Skipped trade: {}", tradeId);
 			}
 			if (offer == null){
 				offer = ShiftingWares.PLACEHOLDER_TRADE;
