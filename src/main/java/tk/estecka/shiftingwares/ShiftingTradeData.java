@@ -36,14 +36,17 @@ public class ShiftingTradeData
 
 	/**
 	 * Should be called immediately after a factory has produced a new trade.
-	 * TODO: villager level-up
 	 */
 	static public void FinalizeTrade(TradeOffer offer, TradeOffers.Factory factory){
 		IShiftingTradeFactory factoryData = IShiftingTradeFactory.Of(factory);
-		ShiftingTradeData data = new ShiftingTradeData();
-		data.isPersistent = factoryData.shiftingwares$IsItemPersistent();
-		data.tradeId = factoryData.shiftingwares$GetTradeId();
+		ShiftingTradeData offerData = ITradeOfferDuck.Of(offer).shiftingwares$GetTradeData();
 
-		ITradeOfferDuck.Of(offer).shiftingwares$SetTradeData(data);
+		offerData.isPersistent |= factoryData.shiftingwares$IsItemPersistent();
+
+		Identifier id = factoryData.shiftingwares$GetTradeId();
+		if (id != null)
+			offerData.tradeId = id;
+
+		ITradeOfferDuck.Of(offer).shiftingwares$SetTradeData(offerData);
 	}
 }
