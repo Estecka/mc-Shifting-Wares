@@ -4,7 +4,6 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.gamerule.v1.CustomGameRuleCategory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
-import net.minecraft.component.ComponentType;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
@@ -23,9 +22,10 @@ import org.slf4j.LoggerFactory;
 public class ShiftingWares
 implements ModInitializer
 {
-	static public final Logger LOGGER = LoggerFactory.getLogger("Shifting-Wares");
+	static public final String MODID = "shifting-wares";
+	static public final Logger LOGGER = LoggerFactory.getLogger(MODID);
 
-	static public final CustomGameRuleCategory RULE_CATTEGORY = new CustomGameRuleCategory(Identifier.of("shifting-wares","gamerules"), Text.translatable("gamerule.category.shiftingwares").formatted(Formatting.BOLD, Formatting.YELLOW));
+	static public final CustomGameRuleCategory RULE_CATTEGORY = new CustomGameRuleCategory(Identifier.of(MODID, "gamerules"), Text.translatable("gamerule.category.shiftingwares").formatted(Formatting.BOLD, Formatting.YELLOW));
 
 	static public final GameRules.Key<BooleanRule> DAILY_RULE    = GameRuleRegistry.register("shiftingWares.dailyReroll",    RULE_CATTEGORY, GameRuleFactory.createBooleanRule(true));
 	static public final GameRules.Key<BooleanRule> DEPLETED_RULE = GameRuleRegistry.register("shiftingWares.depleteReroll",  RULE_CATTEGORY, GameRuleFactory.createBooleanRule(true));

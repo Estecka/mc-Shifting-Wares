@@ -35,7 +35,11 @@ public class ShiftingTradeData
 
 
 	/**
-	 * Should be called immediately after a factory has produced a new trade.
+	 * Should be called immediately  after a factory  has produced  a new trade.
+	 * It's possible  for factories to wrap  other factories; persistence should 
+	 * be preserved down the line.
+	 * Here, trade ids are being  preserved as much as possible, but this has no
+	 * use currently, since SW will not be able to identify the inner factories.
 	 */
 	static public void FinalizeTrade(TradeOffer offer, TradeOffers.Factory factory){
 		IShiftingTradeFactory factoryData = IShiftingTradeFactory.Of(factory);
