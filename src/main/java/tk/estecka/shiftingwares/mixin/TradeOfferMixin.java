@@ -4,6 +4,8 @@ import java.util.function.Function;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
@@ -42,5 +44,10 @@ implements ITradeOfferDuck
 				return offer;
 			})
 		);
+	}
+
+	@Inject( method="use", at=@At("TAIL") )
+	private void use(CallbackInfo ci){
+		this.data.wasNeverUsed = false;
 	}
 }

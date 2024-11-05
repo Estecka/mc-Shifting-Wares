@@ -27,6 +27,7 @@ public class TradeShuffler
 
 	private final VillagerEntity villager;
 	private final boolean depletedOnly;
+	private final boolean keepPersistent;
 
 	private final VillagerProfession job;
 
@@ -39,6 +40,7 @@ public class TradeShuffler
 		this.villager = villager;
 		this.depletedOnly = depletedOnly;
 
+		this.keepPersistent = !villager.getServer().getGameRules().getBoolean(ShiftingWares.MAP_RULE);
 		this.offers = villager.getOffers();
 		this.job = villager.getVillagerData().getProfession();
 		this.random = villager.getRandom();
@@ -91,7 +93,7 @@ public class TradeShuffler
 		
 		TradeOffer offer = offers.get(tradeIndex);
 		ShiftingTradeData data = ITradeOfferDuck.Of(offer).shiftingwares$GetTradeData();
-		if (data.isPersistent && data.wasNeverUsed)
+		if (data.isPersistent && (data.wasNeverUsed || keepPersistent))
 			return false;
 
 		return !this.depletedOnly || offer.isDisabled();
