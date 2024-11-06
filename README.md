@@ -23,12 +23,7 @@ Disabling all rules effectively disables the mod.
 Minecraft permanently saves any create map, and lock their structures from appearing on other exploration maps.
 To prevent daily rerolls from throwing away endless amounts of unsold maps, those trades are handled differently.
 
-Cartographers will remember each map they sell, and offer it again it the next time the same map trade comes up.
-The gamerule `shiftingWares.allowMapReroll` (disabled by default) will allow them to forget a map, after it has been sold at least once.
-
-The map's item name, (or preferably, its translation key), is used to tell apart different types of maps.
-Since 1.20.5, the `item_name` is preferred over the `custom_name`.
-
+By default, map trades will never be rerolled. They may only be rerolled if gamerule `shiftingWares.allowMapReroll` is enabled, and if the trade has been used at least once.
 
 ## Technical details
 - If a villager is unable to generate all registered trades for a level, it will be replaced with an empty trade. With vanilla trades, this should only ever happen to cartographers, who are unable to generate explorer maps in worlds with no structures.  
@@ -40,6 +35,7 @@ Placeholder trades will never take the place of a valid trade; they will only sh
 - Depleted rerolls have a chance to yield duplicate trades.
 
 ## For developpers
-By default, shifting-Wares assumes 2 trades per level, and pulls its trade pools from the same place as Vanilla.
+By default, shifting-Wares assumes 2 trades per level, and pulls its trade pools from the same place as Vanilla. Mods can override this by using the `shifting-wares` entry-point, and implementing [`ITradeLayoutProvider`](./src/main/java/fr/estecka/shiftingwares/api/ITradeLayoutProvider.java).
 
-If you have a mod that changes any of that, Shifting-Wares has an API you can use to specify the trade pools and layout that should be used instead.
+If your mod contains custom implementation of map trade factories, or other similar items, you can communicate extra data to Shifting-Wares by implementing the same methods defined in [`IShiftingTradeFactory`](./src/main/java/fr/estecka/shiftingwares/api/IShiftingTradeFactory.java).
+No dependency on Shifting-Wares is required, you only need to provide methods with the appropriate prototypes in your factories.

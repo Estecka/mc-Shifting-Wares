@@ -49,7 +49,7 @@ public class TradeShuffler
 	}
 	
 	static public List<TradeOffers.Factory[]> GetTradeLayout(VillagerEntity villager){
-		var providers = FabricLoader.getInstance().getEntrypoints("shifting-wares", ITradeLayoutProvider.class);
+		var providers = FabricLoader.getInstance().getEntrypoints(ShiftingWares.MODID, ITradeLayoutProvider.class);
 
 		for (var p : providers) {
 			var layout = p.GetTradeLayout(villager);
@@ -67,7 +67,6 @@ public class TradeShuffler
 		}
 
 		// Fix uninitialized trades, and update used trades.
-		// TODO: handle map trades differently
 		for (TradeOffer offer : offers){
 			ShiftingTradeData data = ITradeOfferDuck.Of(offer).shiftingwares$GetTradeData();
 			FixTradeData(data, offer.getSellItem());

@@ -8,9 +8,9 @@ import net.minecraft.village.TradeOffers.Factory;
 
 /**
  * Must be implemented by mods that want to change how many trades are available
- * to each  villager  level, or  who  don't want  to use  the trades  defined in
- * {@link net.minecraft.village.TradeOffers#PROFESSION_TO_LEVELED_TRADE} nor  in
- * {@link net.minecraft.village.TradeOffers#REBALANCED_PROFESSION_TO_LEVELED_TRADE}
+ * to each villager level, or who don't want villagers to use the trades defined
+ * in {@link net.minecraft.village.TradeOffers#PROFESSION_TO_LEVELED_TRADE}  nor
+ * in {@link net.minecraft.village.TradeOffers#REBALANCED_PROFESSION_TO_LEVELED_TRADE}
  */
 public interface ITradeLayoutProvider
 {
