@@ -1,7 +1,7 @@
-package tk.estecka.shiftingwares.duck;
+package fr.estecka.shiftingwares.duck;
 
 import net.minecraft.village.TradeOffer;
-import tk.estecka.shiftingwares.ShiftingTradeData;
+import fr.estecka.shiftingwares.ShiftingTradeData;
 
 public interface ITradeOfferDuck
 {

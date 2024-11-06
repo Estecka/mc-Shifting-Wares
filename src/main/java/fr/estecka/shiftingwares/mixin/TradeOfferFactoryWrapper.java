@@ -1,4 +1,4 @@
-package tk.estecka.shiftingwares.mixin;
+package fr.estecka.shiftingwares.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,7 +10,7 @@ import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
-import tk.estecka.shiftingwares.ShiftingTradeData;
+import fr.estecka.shiftingwares.ShiftingTradeData;
 
 @Mixin(value={
 	MerchantEntity.class,

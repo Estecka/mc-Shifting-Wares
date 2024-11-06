@@ -1,4 +1,4 @@
-package tk.estecka.shiftingwares.mixin;
+package fr.estecka.shiftingwares.mixin;
 
 import java.util.Map;
 import org.spongepowered.asm.mixin.Final;
@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.village.VillagerType;
 import net.minecraft.village.TradeOffers.TypedWrapperFactory;
-import tk.estecka.shiftingwares.api.IShiftingTradeFactory;
+import fr.estecka.shiftingwares.api.IShiftingTradeFactory;
 
 @Mixin(TypedWrapperFactory.class)
 public class WrapperFactoryMixin

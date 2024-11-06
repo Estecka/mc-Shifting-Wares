@@ -1,4 +1,4 @@
-package tk.estecka.shiftingwares;
+package fr.estecka.shiftingwares;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.gamerule.v1.CustomGameRuleCategory;
@@ -15,7 +15,7 @@ import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradedItem;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.GameRules.BooleanRule;
-import tk.estecka.shiftingwares.TradeLayouts.VanillaTradeLayout;
+import fr.estecka.shiftingwares.TradeLayouts.VanillaTradeLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

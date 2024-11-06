@@ -1,4 +1,4 @@
-package tk.estecka.shiftingwares;
+package fr.estecka.shiftingwares;
 
 import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
@@ -7,8 +7,8 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.Identifier;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
-import tk.estecka.shiftingwares.api.IShiftingTradeFactory;
-import tk.estecka.shiftingwares.duck.ITradeOfferDuck;
+import fr.estecka.shiftingwares.api.IShiftingTradeFactory;
+import fr.estecka.shiftingwares.duck.ITradeOfferDuck;
 
 public class ShiftingTradeData
 {

@@ -1,4 +1,4 @@
-package tk.estecka.shiftingwares.mixin;
+package fr.estecka.shiftingwares.mixin;
 
 import java.util.function.Function;
 import org.spongepowered.asm.mixin.Mixin;
@@ -11,8 +11,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.village.TradeOffer;
-import tk.estecka.shiftingwares.ShiftingTradeData;
-import tk.estecka.shiftingwares.duck.ITradeOfferDuck;
+import fr.estecka.shiftingwares.ShiftingTradeData;
+import fr.estecka.shiftingwares.duck.ITradeOfferDuck;
 
 @Unique
 @Mixin(TradeOffer.class)

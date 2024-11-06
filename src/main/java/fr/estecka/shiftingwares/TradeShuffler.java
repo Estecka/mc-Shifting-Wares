@@ -1,4 +1,4 @@
-package tk.estecka.shiftingwares;
+package fr.estecka.shiftingwares;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -15,11 +15,11 @@ import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.village.TradeOffers;
 import net.minecraft.village.TradeOffers.Factory;
-import tk.estecka.shiftingwares.TradeLayouts.VanillaTradeLayout;
-import tk.estecka.shiftingwares.api.IShiftingTradeFactory;
-import tk.estecka.shiftingwares.api.ITradeLayoutProvider;
-import tk.estecka.shiftingwares.duck.ITradeOfferDuck;
 import net.minecraft.village.VillagerProfession;
+import fr.estecka.shiftingwares.TradeLayouts.VanillaTradeLayout;
+import fr.estecka.shiftingwares.api.IShiftingTradeFactory;
+import fr.estecka.shiftingwares.api.ITradeLayoutProvider;
+import fr.estecka.shiftingwares.duck.ITradeOfferDuck;
 
 public class TradeShuffler 
 {

@@ -1,10 +1,8 @@
-package tk.estecka.shiftingwares.mixin;
+package fr.estecka.shiftingwares.mixin;
 
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
-import tk.estecka.shiftingwares.ShiftingWares;
-import tk.estecka.shiftingwares.TradeShuffler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,6 +10,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import fr.estecka.shiftingwares.ShiftingWares;
+import fr.estecka.shiftingwares.TradeShuffler;
 
 @Unique
 @Mixin(VillagerEntity.class)

@@ -17,7 +17,7 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"tk.estecka.shiftingwares.ShiftingWares"
+			"fr.estecka.shiftingwares.ShiftingWares"
 		]
 	},
 	"mixins": [

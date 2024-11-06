@@ -1,4 +1,4 @@
-package tk.estecka.shiftingwares.mixin;
+package fr.estecka.shiftingwares.mixin;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -7,7 +7,7 @@ import net.minecraft.registry.tag.TagKey;
 import net.minecraft.util.Identifier;
 import net.minecraft.village.TradeOffers.SellMapFactory;
 import net.minecraft.world.gen.structure.Structure;
-import tk.estecka.shiftingwares.api.IShiftingTradeFactory;
+import fr.estecka.shiftingwares.api.IShiftingTradeFactory;
 
 @Mixin(SellMapFactory.class)
 public class SellMapFactoryMixin

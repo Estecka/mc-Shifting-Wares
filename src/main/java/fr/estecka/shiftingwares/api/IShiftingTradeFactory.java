@@ -1,4 +1,4 @@
-package tk.estecka.shiftingwares.api;
+package fr.estecka.shiftingwares.api;
 
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.util.Identifier;
@@ -28,7 +28,7 @@ public interface IShiftingTradeFactory
 	 * This will be used  to associate  a trade offer  to its factory, and avoid
 	 * trade duplicata when rerolling. This should be set for persistent trades,
 	 * else  the villager's offers  may get clogged up  whith repeated copies of
-	 * persistent  trades. Using this on  non-persistent trades  will also  help
+	 * the same  trades. Using  this on  non-persistent  trades  will also  help
 	 * preventing duplicatas from being generated during depleted-rerolls.
 	 */
 	public default @Nullable Identifier shiftingwares$GetTradeId(){
