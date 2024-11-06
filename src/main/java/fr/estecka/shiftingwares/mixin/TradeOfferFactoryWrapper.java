@@ -22,9 +22,9 @@ public class TradeOfferFactoryWrapper
 	@WrapOperation(
 		require=1, // 1 *per-class*
 		method={
-			"fillRecipesFromPool", // Merchant Entity
-			"fillRecipes", // Wandering Trader
-			"create", // Wrapper Factory
+			/* MerchantEntity.fillRecipesFromPool */ "method_19170(Lnet/minecraft/village/TradeOfferList;[Lnet/minecraft/village/TradeOffers$Factory;I)V",
+			/* WanderingTraderEntity.fillRecipes  */ "method_7237()V",
+			/* TypedWrapperFactory.create         */ "method_7246(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/random/Random;)Lnet/minecraft/village/TradeOffer;",
 		},
 		at=@At(
 			value="INVOKE",
