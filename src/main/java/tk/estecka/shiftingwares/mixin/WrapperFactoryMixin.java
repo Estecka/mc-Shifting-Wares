@@ -17,9 +17,9 @@ implements IShiftingTradeFactory
 	@Shadow private @Final Map<VillagerType, TradeOffers.Factory> typeToFactory;
 
 	/**
-	 * The returned  ids  may be  "wrong"  for the  trades  that are  eventually
-	 * produced, but this works for the purpose of avoiding duplicatas since the
-	 * trade offers only needs to be associated with the outer-most factory.
+	 * The  returned ids  may  not match  the factory  that created it, but this
+	 * works for the purpose of avoiding duplicatas, since the trade offers only
+	 * needs to be associated with the outer-most factory.
 	 */
 	@Override
 	public Identifier shiftingwares$GetTradeId(){
