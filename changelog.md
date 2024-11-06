@@ -44,5 +44,9 @@ This boost performances when using Fresh Animations
 ### 2.2.3
 - Updated for MC 1.21.2
 - Starting MC 1.21.2, placeholder trades now use `item_model`'s to look empty again.
-### 2.2.4
-- Made previous port backward compatible with MC 1.21.0
+
+# v3
+- Removed trade cache.
+- Trades can now be marked a persistent by their factories. Persistent items are *never* rerolled until they have been sold. Filled map trades are automatically marked as persistent regardless of the factories setting. This prevents mods who implement custom factories from causing unsold maps to be discarded.
+- Trades can now be given an identifier by their factories. ShiftingWares will prevent villagers from getting multiple trades coming from the same factory during rerolls. This will prevent the villager's listing from getting clogged up with multiple copies of the same persistent trade after any reroll, and prevent duplicatas of non-persistent from ocurring during depleted rerolls.
+- Other mods can provide the relevant data for their factories, by simply implementing the correct methods. No dependency on ShiftingWares is required.
