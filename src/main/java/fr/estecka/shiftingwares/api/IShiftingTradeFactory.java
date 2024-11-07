@@ -16,20 +16,21 @@ public interface IShiftingTradeFactory
 	}
 
 	/**
-	 * Prevents the trades  from being be rerolled, until its item has been sold
-	 * at least once. This is, for example, relevant to  Exploration Maps, whose
-	 * mere creation leaves a permanent impact on the world.
+	 * Prevents the generated trades  from being be rerolled, until its item has
+	 * been sold  at least  once. This is, for example, relevant to  Exploration
+	 * Maps, whose mere creation leaves a permanent impact on the world.
 	 */
 	public default boolean shiftingwares$IsItemPersistent(){
 		return false;
 	}
 
 	/**
-	 * This will be used  to associate  a trade offer  to its factory, and avoid
-	 * trade duplicata when rerolling. This should be set for persistent trades,
-	 * else  the villager's offers  may get clogged up  whith repeated copies of
-	 * the same  trades. Using  this on  non-persistent  trades  will also  help
-	 * preventing duplicatas from being generated during depleted-rerolls.
+	 * This will be used to associate existsing trade offers to their factories,
+	 * and  avoid  trade  duplicata  when  rerolling.  This  should  be set  for
+	 * persistent trades, else  the villager's offers  may get clogged up  whith
+	 * repeated  copies  of the  same  trades. This may  still  be used  on non-
+	 * persistent  trades, since  those  can  also  generate  duplicatas  during
+	 * depleted rerolls.
 	 */
 	public default @Nullable Identifier shiftingwares$GetTradeId(){
 		return null;
