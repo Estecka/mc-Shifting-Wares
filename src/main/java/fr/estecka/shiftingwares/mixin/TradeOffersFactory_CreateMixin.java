@@ -17,7 +17,7 @@ import fr.estecka.shiftingwares.ShiftingTradeData;
 	WanderingTraderEntity.class,
 	TradeOffers.TypedWrapperFactory.class,
 })
-public class TradeOfferFactoryWrapper
+public class TradeOffersFactory_CreateMixin
 {
 	@WrapOperation(
 		require=1, // 1 *per-class*

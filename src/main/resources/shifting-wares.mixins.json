@@ -4,9 +4,9 @@
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
 		"SellMapFactoryMixin",
-		"TradeOfferFactoryWrapper",
 		"TradeOfferMixin",
 		"TradeOffersFactoryMixin",
+		"TradeOffersFactory_CreateMixin",
 		"VillagerEntityMixin"
 	],
 	"injectors": {
