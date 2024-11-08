@@ -35,8 +35,7 @@ public class TradeOffersFactory_CreateMixin
 	)
 	private TradeOffer InitializeShiftingData(TradeOffers.Factory factory, Entity entity, Random random, Operation<TradeOffer> original){
 		TradeOffer offer = original.call(factory, entity, random);
-		if (offer != null)
-			ShiftingTradeData.FinalizeTrade(offer, factory);
+		ShiftingTradeData.FinalizeTrade(offer, factory);
 		return offer;
 	}
 }

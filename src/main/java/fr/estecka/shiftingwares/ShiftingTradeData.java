@@ -4,6 +4,8 @@ import java.util.Optional;
 import org.jetbrains.annotations.Nullable;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
@@ -41,16 +43,29 @@ public class ShiftingTradeData
 	 * Here, trade ids are being  preserved as much as possible, but this has no
 	 * use currently, since SW will not be able to identify the inner factories.
 	 */
-	static public void FinalizeTrade(TradeOffer offer, TradeOffers.Factory factory){
+	static public void FinalizeTrade(@Nullable TradeOffer offer, TradeOffers.Factory factory){
+		if (offer == null)
+			return;
+
 		IShiftingTradeFactory factoryData = IShiftingTradeFactory.Of(factory);
 		ShiftingTradeData offerData = ITradeOfferDuck.Of(offer).shiftingwares$GetTradeData();
 
 		offerData.isPersistent |= factoryData.shiftingwares$IsItemPersistent();
 
-		Identifier id = factoryData.shiftingwares$GetTradeId();
-		if (id != null)
-			offerData.tradeId = id;
+		Identifier factoryId = factoryData.shiftingwares$GetTradeId();
+		if (factoryId != null)
+			offerData.tradeId = factoryId;
 
-		ITradeOfferDuck.Of(offer).shiftingwares$SetTradeData(offerData);
+		ItemStack sellItem = offer.getSellItem();
+		if (!offerData.isPersistent && ShouldBePersistent(sellItem)){
+			offerData.isPersistent = true;
+			ShiftingWares.LOGGER.error("A trade factory just produced a persistent item, but did not declare it as such: {} ({})", sellItem.getName().getString(), sellItem.getItem());
+		}
+		else if (offerData.isPersistent && factoryId != null)
+			ShiftingWares.LOGGER.info("Created new persistent trade: {}", factoryId);
+	}
+
+	static public boolean ShouldBePersistent(ItemStack stack){
+		return stack.contains(DataComponentTypes.MAP_ID);
 	}
 }

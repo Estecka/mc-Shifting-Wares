@@ -6,7 +6,6 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.component.DataComponentTypes;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
@@ -66,10 +65,14 @@ public class TradeShuffler
 			return;
 		}
 
-		// Fix uninitialized trades, and update used trades.
+		// Update or initialize trade data
 		for (TradeOffer offer : offers){
 			ShiftingTradeData data = ITradeOfferDuck.Of(offer).shiftingwares$GetTradeData();
-			FixTradeData(data, offer.getSellItem());
+
+			ItemStack sellItem = offer.getSellItem();
+			if (!data.isPersistent && ShiftingTradeData.ShouldBePersistent(sellItem))
+				ShiftingWares.LOGGER.warn("Caught an older unitialized persistent trade: {} ({})", sellItem.getName().getString(), sellItem.getItem());
+
 			if (offer.hasBeenUsed())
 				data.wasNeverUsed = false;
 		}
@@ -98,23 +101,6 @@ public class TradeShuffler
 		return !this.depletedOnly || offer.isDisabled();
 	}
 
-	/**
-	 * Find trades  that *should* be persistent, but were not marked as such  by
-	 * their factories. This may happen if:
-	 * - ShiftingWares  has been installed  for the first time  on a world where
-	 * existing villagers were already selling maps.
-	 * - Another mod uses  a custom  map trade factory, but does not communicate
-	 * it to ShiftingWares.
-	 */
-	static private void FixTradeData(ShiftingTradeData data, ItemStack sellItem){
-		if (sellItem.contains(DataComponentTypes.MAP_ID)
-		&& !data.isPersistent
-		){
-			data.isPersistent = true;
-			ShiftingWares.LOGGER.warn("Forcibly marked a trade offer as persistent due to having a map Id:\n{}", sellItem);
-		}
-	}
-
 	static private List<Factory>[] MutableCopy(List<Factory[]> layout){
 		IdentityHashMap<Factory[], ArrayList<Factory>> mutablePools = new IdentityHashMap<>();
 		mutablePools.put(null, new ArrayList<>(0));
@@ -139,7 +125,7 @@ public class TradeShuffler
 	private void	DuplicataAwareReroll(){
 		List<Factory>[] mutableLayout = MutableCopy(this.tradeLayout);
 		Set<Identifier> activeTrades = new HashSet<>();
-		boolean missingSome = false;
+		// boolean missingSome = false;
 
 		for (int i=0; i<offers.size(); ++i)
 		if  (!shouldReroll(i)) {
@@ -151,38 +137,37 @@ public class TradeShuffler
 		for (int i=0; i<offers.size(); ++i) 
 		if (shouldReroll(i))
 		{
-			List<Factory> pool = mutableLayout[i];
+			Factory factory = null;
 			TradeOffer offer = null;
+			List<Factory> pool = mutableLayout[i];
+			pool.removeIf( f -> {
+				Identifier tradeId = IShiftingTradeFactory.Of(f).shiftingwares$GetTradeId();
+				return tradeId != null && activeTrades.contains(tradeId);
+			});
 
 			while (offer == null && !pool.isEmpty()) {
 				int roll = random.nextInt(pool.size());
-				Factory factory = pool.get(roll);
+				factory = pool.get(roll);
+				offer = factory.create(villager, random);
 				pool.remove(roll);
-
-				Identifier tradeId = IShiftingTradeFactory.Of(factory).shiftingwares$GetTradeId();
-				if (tradeId == null || !activeTrades.contains(tradeId)){
-					offer = factory.create(villager, random);
-					if (offer != null){
-						ShiftingTradeData.FinalizeTrade(offer, factory);
-						if (tradeId != null){
-							activeTrades.add(tradeId);
-							ShiftingWares.LOGGER.warn("Added trade: {}", tradeId);
-						}
-					}
-				}
-				else
-					ShiftingWares.LOGGER.warn("Skipped trade: {}", tradeId);
 			}
+
 			if (offer == null){
 				offer = ShiftingWares.PLACEHOLDER_TRADE;
-				missingSome = true;
+				// missingSome = true;
+			}
+			else {
+				ShiftingTradeData.FinalizeTrade(offer, factory);
+				ShiftingTradeData data = ITradeOfferDuck.Of(offer).shiftingwares$GetTradeData();
+				if (data.tradeId != null)
+					activeTrades.add(data.tradeId);
 			}
 
 			offers.set(i, offer);
 		}
 
-		if (missingSome)
-			ShiftingWares.LOGGER.warn("Failed to generate some trade offers for job {} ({})", job, villager);
+		// if (missingSome)
+		// 	ShiftingWares.LOGGER.warn("Failed to generate some trade offers for job {} ({})", job, villager);
 	}
 
 }
