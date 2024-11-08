@@ -12,12 +12,12 @@
 		"sources": "https://github.com/Estecka/mc-Shifting-Wares",
 		"issues":  "https://github.com/Estecka/mc-Shifting-Wares/issues"
 	},
-	"license": "EUPL",
+	"license": "EUPL-1.2",
 	"icon": "assets/shifting-wares/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"tk.estecka.shiftingwares.ShiftingWares"
+			"fr.estecka.shiftingwares.ShiftingWares"
 		]
 	},
 	"mixins": [
@@ -25,9 +25,12 @@
 	],
 	"accessWidener" : "shifting-wares.accesswidener",
 	"depends": {
-		"minecraft": "^1.21.2",
+		"minecraft": "^1.21",
 		"fabricloader": ">=0.16.7",
 		"fabric-api": "*",
 		"java": ">=21"
+	},
+	"recommends": {
+		"minecraft": "^1.21.2"
 	}
 }

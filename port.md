@@ -20,5 +20,5 @@ Current master
 - `getRandom()` was moved from `LivingEntity` to its parent class `Entity`. No code change required, but needs recompilation.
 
 ### 1.21.2
-#### No workaround:
-- `getGamerules()` was moved from `World` to its child class `ServerWorld`. Code change can be avoided by casting, but recompilation is still needed.
+#### Worked around:
+- `World.getGamerules()` was moved to `ServerWorld`. Call it from `MinecraftServer` instead.
