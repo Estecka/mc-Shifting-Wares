@@ -19,7 +19,7 @@ implements IShiftingTradeFactory
 	/**
 	 * The returned id  may not match  the factory that  eventually creates  the
 	 * trade, but this still works for the purpose of avoiding duplicatas, since
-	 * trade offers only needs to be associated with the outer-most factory.
+	 * trade offers only need to be associated with the outer-most factory.
 	 */
 	@Override
 	public Identifier shiftingwares$GetTradeId(){
