@@ -35,7 +35,7 @@ Placeholder trades will never take the place of a valid trade; they will only sh
 - Depleted rerolls have a chance to yield duplicate trades.
 
 ## For developpers
-By default, shifting-Wares assumes 2 trades per level, and pulls its trade pools from the same place as Vanilla. Mods can override this by using the `shifting-wares` entry-point, and implementing [`ITradeLayoutProvider`](./src/main/java/fr/estecka/shiftingwares/api/ITradeLayoutProvider.java).
+By default, shifting-Wares assumes 2 trades per level, and pulls its trade pools from the same place as Vanilla. Other mods can override this by using the `shifting-wares` entry-point, and implementing [`ITradeLayoutProvider`](./src/main/java/fr/estecka/shiftingwares/api/ITradeLayoutProvider.java).
 
-If your mod contains custom implementation of map trade factories, or produces other items attached with with permanent data, you can communicate to Shifting-Wares that they should be persistent, by implementing the same methods defined in [`IShiftingTradeFactory`](./src/main/java/fr/estecka/shiftingwares/api/IShiftingTradeFactory.java).
+If your mod contains custom implementation of map trade factories, or produces other items attached with permanent data, you can communicate to Shifting-Wares that they should be persistent, by implementing the same methods defined in [`IShiftingTradeFactory`](./src/main/java/fr/estecka/shiftingwares/api/IShiftingTradeFactory.java).
 No dependency on Shifting-Wares is required for this, you only need to provide methods with matching names and prototypes.
