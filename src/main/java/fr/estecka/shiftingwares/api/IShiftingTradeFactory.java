@@ -25,8 +25,8 @@ public interface IShiftingTradeFactory
 	}
 
 	/**
-	 * This will be used to associate existsing trade offers to their factories,
-	 * and  avoid  trade  duplicata  when  rerolling.  This  should  be set  for
+	 * This will be used to associate  existing trade offers to their factories,
+	 * and  avoid  trade  duplicatas  when  rerolling.  This should  be set  for
 	 * persistent trades, else  the villager's offers  may get clogged up  whith
 	 * repeated  copies  of the  same  trades. This may  still  be used  on non-
 	 * persistent  trades, since  those  can  also  generate  duplicatas  during

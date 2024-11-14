@@ -10,7 +10,7 @@ import net.minecraft.village.TradeOffers;
 import net.minecraft.village.VillagerData;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.TradeOffers.Factory;
-import fr.estecka.shiftingwares.ShiftingWares;
+import fr.estecka.shiftingwares.ShiftingWaresMod;
 import fr.estecka.shiftingwares.api.ITradeLayoutProvider;
 
 public class VanillaTradeLayout
@@ -43,7 +43,7 @@ implements ITradeLayoutProvider
 		}
 
 		if (jobPool == null){
-			ShiftingWares.LOGGER.error("No trade pool for job {}.", job);
+			ShiftingWaresMod.LOGGER.error("No trade pool for job {}.", job);
 			return null;
 		}
 
@@ -51,7 +51,7 @@ implements ITradeLayoutProvider
 		{
 			var pool = jobPool.get(lvl);
 			if (pool == null)
-				ShiftingWares.LOGGER.error("Missing pool for job {} lvl.{}", job, lvl);
+				ShiftingWaresMod.LOGGER.error("Missing pool for job {} lvl.{}", job, lvl);
 			else for (int i=0; i<2 && i<pool.length; ++i)
 				layout.add(pool);
 		}

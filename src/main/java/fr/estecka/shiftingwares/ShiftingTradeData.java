@@ -59,10 +59,10 @@ public class ShiftingTradeData
 		ItemStack sellItem = offer.getSellItem();
 		if (!offerData.isPersistent && ShouldBePersistent(sellItem)){
 			offerData.isPersistent = true;
-			ShiftingWares.LOGGER.error("A trade factory just produced a persistent item, but did not declare it as such: {} ({})", sellItem.getName().getString(), sellItem.getItem());
+			ShiftingWaresMod.LOGGER.error("A trade factory just produced a persistent item, but did not declare it as such: {} ({})", sellItem.getName().getString(), sellItem.getItem());
 		}
 		else if (offerData.isPersistent && factoryId != null)
-			ShiftingWares.LOGGER.info("Created new persistent trade: {}", factoryId);
+			ShiftingWaresMod.LOGGER.info("Created new persistent trade: {}", factoryId);
 	}
 
 	static public boolean ShouldBePersistent(ItemStack stack){

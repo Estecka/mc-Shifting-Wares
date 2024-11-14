@@ -19,7 +19,7 @@ import fr.estecka.shiftingwares.TradeLayouts.VanillaTradeLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ShiftingWares
+public class ShiftingWaresMod
 implements ModInitializer
 {
 	static public final String MODID = "shifting-wares";

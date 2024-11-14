@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import fr.estecka.shiftingwares.ShiftingWares;
+import fr.estecka.shiftingwares.ShiftingWaresMod;
 import fr.estecka.shiftingwares.TradeShuffler;
 
 @Unique
@@ -21,8 +21,8 @@ public abstract class VillagerEntityMixin
 
 	private final VillagerEntity villager = (VillagerEntity)(Object)this;
 
-	private boolean	IsDailyRerollEnabled()   { return villager.getServer().getGameRules().get(ShiftingWares.DAILY_RULE   ).get(); }
-	private boolean	IsDepleteRerollEnabled() { return villager.getServer().getGameRules().get(ShiftingWares.DEPLETED_RULE).get(); }
+	private boolean	IsDailyRerollEnabled()   { return villager.getServer().getGameRules().get(ShiftingWaresMod.DAILY_RULE   ).get(); }
+	private boolean	IsDepleteRerollEnabled() { return villager.getServer().getGameRules().get(ShiftingWaresMod.DEPLETED_RULE).get(); }
 
 	/**
 	 * Triggered once a day, regardless of whether the villager needs restocks.
@@ -30,11 +30,11 @@ public abstract class VillagerEntityMixin
 	@Inject( method="restockAndUpdateDemandBonus", at=@At(value="HEAD") )
 	private void DailyReroll(CallbackInfo info) {
 		if (IsDailyRerollEnabled()){
-			ShiftingWares.LOGGER.info("A villager has restocked all their trades.");
+			ShiftingWaresMod.LOGGER.info("A villager has restocked all their trades.");
 			new TradeShuffler(villager, false).Reroll();
 		}
 		else if (IsDepleteRerollEnabled()){
-			ShiftingWares.LOGGER.info("A villager has restocked some trades.");
+			ShiftingWaresMod.LOGGER.info("A villager has restocked some trades.");
 			new TradeShuffler(villager, true).Reroll();
 		}
 	}
@@ -59,7 +59,7 @@ public abstract class VillagerEntityMixin
 	@WrapOperation( method="restock", at=@At(value="INVOKE", target="net/minecraft/entity/passive/VillagerEntity.getOffers ()Lnet/minecraft/village/TradeOfferList;") )
 	private TradeOfferList RestockReroll(VillagerEntity me, Operation<TradeOfferList> original) {
 		if (IsDepleteRerollEnabled()){
-			ShiftingWares.LOGGER.info("A villager has restocked some trades.");
+			ShiftingWaresMod.LOGGER.info("A villager has restocked some trades.");
 			new TradeShuffler(villager, true).Reroll();
 			return EMPTY;
 		}

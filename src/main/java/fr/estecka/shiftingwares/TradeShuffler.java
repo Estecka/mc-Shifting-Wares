@@ -39,7 +39,7 @@ public class TradeShuffler
 		this.villager = villager;
 		this.depletedOnly = depletedOnly;
 
-		this.keepPersistent = !villager.getServer().getGameRules().getBoolean(ShiftingWares.MAP_RULE);
+		this.keepPersistent = !villager.getServer().getGameRules().getBoolean(ShiftingWaresMod.MAP_RULE);
 		this.offers = villager.getOffers();
 		this.job = villager.getVillagerData().getProfession();
 		this.random = villager.getRandom();
@@ -48,7 +48,7 @@ public class TradeShuffler
 	}
 	
 	static public List<TradeOffers.Factory[]> GetTradeLayout(VillagerEntity villager){
-		var providers = FabricLoader.getInstance().getEntrypoints(ShiftingWares.MODID, ITradeLayoutProvider.class);
+		var providers = FabricLoader.getInstance().getEntrypoints(ShiftingWaresMod.MODID, ITradeLayoutProvider.class);
 
 		for (var p : providers) {
 			var layout = p.GetTradeLayout(villager);
@@ -61,7 +61,7 @@ public class TradeShuffler
 
 	public void	Reroll(){
 		if (tradeLayout == null){
-			ShiftingWares.LOGGER.error("Missing layout, villager will not be rerolled: {} ({})", job, villager);
+			ShiftingWaresMod.LOGGER.error("Missing layout, villager will not be rerolled: {} ({})", job, villager);
 			return;
 		}
 
@@ -71,7 +71,7 @@ public class TradeShuffler
 
 			ItemStack sellItem = offer.getSellItem();
 			if (!data.isPersistent && ShiftingTradeData.ShouldBePersistent(sellItem))
-				ShiftingWares.LOGGER.warn("Caught an older unitialized persistent trade: {} ({})", sellItem.getName().getString(), sellItem.getItem());
+				ShiftingWaresMod.LOGGER.warn("Caught an older unitialized persistent trade: {} ({})", sellItem.getName().getString(), sellItem.getItem());
 
 			if (offer.hasBeenUsed())
 				data.wasNeverUsed = false;
@@ -84,7 +84,7 @@ public class TradeShuffler
 
 		// Reserve space for new trades
 		while(offers.size() < tradeLayout.size())
-			offers.add(ShiftingWares.PLACEHOLDER_TRADE);
+			offers.add(ShiftingWaresMod.PLACEHOLDER_TRADE);
 
 		DuplicataAwareReroll();
 	}
@@ -153,7 +153,7 @@ public class TradeShuffler
 			}
 
 			if (offer == null){
-				offer = ShiftingWares.PLACEHOLDER_TRADE;
+				offer = ShiftingWaresMod.PLACEHOLDER_TRADE;
 				// missingSome = true;
 			}
 			else {
