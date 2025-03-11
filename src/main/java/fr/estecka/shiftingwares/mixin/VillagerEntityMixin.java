@@ -1,8 +1,10 @@
 package fr.estecka.shiftingwares.mixin;
 
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
+import net.minecraft.village.TradeOffers;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,6 +26,11 @@ public abstract class VillagerEntityMixin
 	private boolean	IsDailyRerollEnabled()   { return villager.getServer().getGameRules().get(ShiftingWaresMod.DAILY_RULE   ).get(); }
 	private boolean	IsDepleteRerollEnabled() { return villager.getServer().getGameRules().get(ShiftingWaresMod.DEPLETED_RULE).get(); }
 
+
+/******************************************************************************/
+/* # Daily Rerolls                                                            */
+/******************************************************************************/
+
 	/**
 	 * Triggered once a day, regardless of whether the villager needs restocks.
 	 */
@@ -38,6 +45,7 @@ public abstract class VillagerEntityMixin
 			new TradeShuffler(villager, true).Reroll();
 		}
 	}
+
 	/**
 	 * This redirects the `for` loop that would normally refill all trades.
 	 * Daily refills are never needed  due to all trades being outright replaced
@@ -50,6 +58,11 @@ public abstract class VillagerEntityMixin
 		else
 			return original.call(me);
 	}
+
+
+/******************************************************************************/
+/* # Depletedrolls                                                            */
+/******************************************************************************/
 
 	/**
 	 * Triggered whenever the villager decides to restock due to low stocks.
@@ -73,12 +86,31 @@ public abstract class VillagerEntityMixin
 	 * This does not prevent partially used trades  from being refilled whenever
 	 * a restock does occurs, this only prevents restocks from being wasted.
 	 * 
-	 * @implNote Placeholder trades can never be "used" so they will never 
+	 * @implNote Placeholder  trades  can never  be "used" so  they  will  never
 	 * trigger restocks despite being "disabled".
 	 */
 	@WrapOperation( method="needsRestock", at=@At(value="INVOKE", target="net/minecraft/village/TradeOffer.hasBeenUsed ()Z") )
 	private boolean RestockDepletedOnly(TradeOffer offer, Operation<Boolean> hasBeenUsed){
 		return hasBeenUsed.call(offer) && (offer.isDisabled() || !IsDepleteRerollEnabled());
+	}
+
+
+/******************************************************************************/
+/* # Deterministic Initialization                                             */
+/******************************************************************************/
+
+	/**
+	 * @implNote The villager's random is completely replace for the duration of
+	 * the operation. That random  is used  not only to selecte  the trade offer
+	 * factories, but also inside the factories themselves.
+	 */
+	@WrapOperation( method="fillRecipes", at=@At(value="INVOKE", target="net/minecraft/entity/passive/VillagerEntity.fillRecipesFromPool(Lnet/minecraft/village/TradeOfferList;[Lnet/minecraft/village/TradeOffers$Factory;I)V"))
+	private void SetDeterministicRandom(VillagerEntity me, TradeOfferList list, TradeOffers.Factory[] pool, int count, Operation<Void> original){
+		IEntityAccessor accessor = (IEntityAccessor)this;
+		Random trueRandom = me.getRandom();
+		accessor.setRandom(Random.create(me.getUuid().hashCode()));
+		original.call(me, list, pool, count);
+		accessor.setRandom(trueRandom);
 	}
 
 }
