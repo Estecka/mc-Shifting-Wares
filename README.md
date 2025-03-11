@@ -1,15 +1,13 @@
 # Shifting Wares
 
 Causes villager to re-roll their trade offers on their own accord, up to three times a day.
-The effect of thiswill be most noticeable on professions that can sell enchanted or coloured items; a single one of these villagers will be able to offer a much greater variety of wares over time.
+This effect will be most noticeable on professions who can sell enchanted or coloured items; a single one of these villagers will be able to offer a much greater variety of wares over time.
 
-This aims to reduce the benefits of exploitative playstyle, while making serendipitous playstyles more viable.
+This aims to reduce the benefits of exploitative playstyle, while making serendipitous playstyles more viable. Villagers with perfect trades will not keep those trades forever, and villagers with bad trades will get better eventually. Even though a single villager can potentially provide everything you need, having multiple villagers of the same profession is still useful to increase the odds of getting a specific trade.
 
-While it's still possible to get the trade you want by repeatedly breaking a villager's workstation, the benefits of doing so become *very* short lived. Waiting for a natural reroll is probably a better use of your time.
+Because all trades eventually expire, villagers become much easier to replace if they die, so you don't need to care as much about their safety. You can let them roam around freely with little risk to your economy.
 
-Because all trades eventually expire, villagers become much easier to replace if they die, so you don't need to care as much about their safety. You can let them roam around freely with little risk.
-
-## Triggers
+## Reroll Triggers
 
 There are two gamerules that control when trades can be re-rolled. Both are enabled by default.
 Disabling all rules effectively disables the mod.
@@ -20,17 +18,23 @@ Disabling all rules effectively disables the mod.
 	This also prevents offers from being refilled, if they have a remaining uses.
 
 ## Exploration map trades
-Minecraft permanently saves any create map, and lock their structures from appearing on other exploration maps.
+Minecraft permanently saves all created maps, and lock their structures from appearing on other exploration maps.
 To prevent daily rerolls from throwing away endless amounts of unsold maps, those trades are handled differently.
 
 By default, map trades will never be rerolled. They may only be rerolled if the gamerule `shiftingWares.allowMapReroll` is enabled, and if the trade has been used at least once.
 
-## Technical details
-- If a villager is unable to generate all registered trades for a level, it will be replaced with an empty trade. With vanilla trades, this should only ever happen to cartographers, who are unable to generate explorer maps in worlds with no structures.  
-These paddings are required to ensure trades are rerolled with one of equivalent level; a trade's position in the list is the only indication to its level.
+## Workstation protection
+
+Breaking and replacing a villager's workstation no longer forces the villager to reroll its trades. The initial trades are generated with a deterministic random, using the villager's UUID as the seed.
+
+This is controlled by the gamerule `shiftingWares.workstationProtection`.
+
+## Miscellani technical details
+- If a villager is unable to generate a trade for a slot, it will be replaced with an empty trade. In vanilla, this should only ever happen to cartographers, who are unable to generate explorer maps in worlds with no structures.  
+These empty paddings are required to ensure trades are rerolled with ones of equivalent level, because a trade's position in the list is the only indication to its level.
 Placeholder trades will never take the place of a valid trade; they will only show up if all other options are exhausted.
 
-- The "Demand Bonus" game mechanic is mostly removed, because the demand bonus data is deleted along with the offers that are rerolled. Any effect it may still have is uncertain.
+- As a side effect of this mod, the "Demand Bonus" mechanic has its effect greatly diminished, because the demand bonus data is deleted along with the offers that are rerolled.
 
 - Depleted rerolls have a chance to yield duplicate trades.
 
