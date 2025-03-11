@@ -25,11 +25,12 @@ implements ModInitializer
 	static public final String MODID = "shifting-wares";
 	static public final Logger LOGGER = LoggerFactory.getLogger(MODID);
 
-	static public final CustomGameRuleCategory RULE_CATTEGORY = new CustomGameRuleCategory(Identifier.of(MODID, "gamerules"), Text.translatable("gamerule.category.shiftingwares").formatted(Formatting.BOLD, Formatting.YELLOW));
+	static public final CustomGameRuleCategory RULE_CATEGORY = new CustomGameRuleCategory(Identifier.of(MODID, "gamerules"), Text.translatable("gamerule.category.shiftingwares").formatted(Formatting.BOLD, Formatting.YELLOW));
 
-	static public final GameRules.Key<BooleanRule> DAILY_RULE    = GameRuleRegistry.register("shiftingWares.dailyReroll",    RULE_CATTEGORY, GameRuleFactory.createBooleanRule(true));
-	static public final GameRules.Key<BooleanRule> DEPLETED_RULE = GameRuleRegistry.register("shiftingWares.depleteReroll",  RULE_CATTEGORY, GameRuleFactory.createBooleanRule(true));
-	static public final GameRules.Key<BooleanRule> MAP_RULE      = GameRuleRegistry.register("shiftingWares.allowMapReroll", RULE_CATTEGORY, GameRuleFactory.createBooleanRule(false));
+	static public final GameRules.Key<BooleanRule> WORKSTaATION_RULE = GameRuleRegistry.register("shiftingWares.workstationProtection", RULE_CATEGORY, GameRuleFactory.createBooleanRule(true));
+	static public final GameRules.Key<BooleanRule> DAILY_RULE    = GameRuleRegistry.register("shiftingWares.dailyReroll",    RULE_CATEGORY, GameRuleFactory.createBooleanRule(true));
+	static public final GameRules.Key<BooleanRule> DEPLETED_RULE = GameRuleRegistry.register("shiftingWares.depleteReroll",  RULE_CATEGORY, GameRuleFactory.createBooleanRule(true));
+	static public final GameRules.Key<BooleanRule> MAP_RULE      = GameRuleRegistry.register("shiftingWares.allowMapReroll", RULE_CATEGORY, GameRuleFactory.createBooleanRule(false));
 
 	static public final TradeOffer PLACEHOLDER_TRADE;
 	

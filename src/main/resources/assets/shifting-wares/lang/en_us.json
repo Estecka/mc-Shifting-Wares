@@ -5,5 +5,7 @@
 	"gamerule.shiftingWares.dailyReroll": "Daily reroll",
 	"gamerule.shiftingWares.dailyReroll.description": "Villagers will reroll all their offers once per day.",
 	"gamerule.shiftingWares.depleteReroll": "Reroll depleted offers",
-	"gamerule.shiftingWares.depleteReroll.description": "Villagers will never refill their offers. Instead, those are rerolled after being completely depleted."
+	"gamerule.shiftingWares.depleteReroll.description": "Villagers will never refill their offers. Instead, those are rerolled after being completely depleted.",
+	"gamerule.shiftingWares.workstationProtection": "Workstation Protection",
+	"gamerule.shiftingWares.workstationProtection.description": "Prevents rerolling trades by breaking and replacing a villager's workstation"
 }
