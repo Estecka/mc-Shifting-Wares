@@ -27,7 +27,7 @@ implements ModInitializer
 
 	static public final CustomGameRuleCategory RULE_CATEGORY = new CustomGameRuleCategory(Identifier.of(MODID, "gamerules"), Text.translatable("gamerule.category.shiftingwares").formatted(Formatting.BOLD, Formatting.YELLOW));
 
-	static public final GameRules.Key<BooleanRule> WORKSTaATION_RULE = GameRuleRegistry.register("shiftingWares.workstationProtection", RULE_CATEGORY, GameRuleFactory.createBooleanRule(true));
+	static public final GameRules.Key<BooleanRule> WORKSTATION_RULE = GameRuleRegistry.register("shiftingWares.workstationProtection", RULE_CATEGORY, GameRuleFactory.createBooleanRule(true));
 	static public final GameRules.Key<BooleanRule> DAILY_RULE    = GameRuleRegistry.register("shiftingWares.dailyReroll",    RULE_CATEGORY, GameRuleFactory.createBooleanRule(true));
 	static public final GameRules.Key<BooleanRule> DEPLETED_RULE = GameRuleRegistry.register("shiftingWares.depleteReroll",  RULE_CATEGORY, GameRuleFactory.createBooleanRule(true));
 	static public final GameRules.Key<BooleanRule> MAP_RULE      = GameRuleRegistry.register("shiftingWares.allowMapReroll", RULE_CATEGORY, GameRuleFactory.createBooleanRule(false));

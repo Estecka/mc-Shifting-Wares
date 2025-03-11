@@ -96,7 +96,7 @@ public abstract class VillagerEntityMixin
 
 
 /******************************************************************************/
-/* # Deterministic Initialization                                             */
+/* # Workstation Protection                                                   */
 /******************************************************************************/
 
 	/**
@@ -106,11 +106,17 @@ public abstract class VillagerEntityMixin
 	 */
 	@WrapOperation( method="fillRecipes", at=@At(value="INVOKE", target="net/minecraft/entity/passive/VillagerEntity.fillRecipesFromPool(Lnet/minecraft/village/TradeOfferList;[Lnet/minecraft/village/TradeOffers$Factory;I)V"))
 	private void SetDeterministicRandom(VillagerEntity me, TradeOfferList list, TradeOffers.Factory[] pool, int count, Operation<Void> original){
-		IEntityAccessor accessor = (IEntityAccessor)this;
-		Random trueRandom = me.getRandom();
-		accessor.setRandom(Random.create(me.getUuid().hashCode()));
-		original.call(me, list, pool, count);
-		accessor.setRandom(trueRandom);
+		boolean deterministic = me.getServer().getGameRules().getBoolean(ShiftingWaresMod.WORKSTATION_RULE);
+
+		if (deterministic) {
+			IEntityAccessor accessor = (IEntityAccessor)this;
+			Random trueRandom = me.getRandom();
+			accessor.setRandom(Random.create(me.getUuid().hashCode()));
+			original.call(me, list, pool, count);
+			accessor.setRandom(trueRandom);
+		}
+		else
+			original.call(me, list, pool, count);
 	}
 
 }
