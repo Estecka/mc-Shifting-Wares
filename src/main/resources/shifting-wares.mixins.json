@@ -3,6 +3,7 @@
 	"package": "fr.estecka.shiftingwares.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
+		"IEntityAccessor",
 		"SellMapFactoryMixin",
 		"TradeOfferMixin",
 		"TradeOffersFactoryMixin",

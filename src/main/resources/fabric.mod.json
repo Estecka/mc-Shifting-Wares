@@ -17,16 +17,15 @@
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"fr.estecka.shiftingwares.ShiftingWares"
+			"fr.estecka.shiftingwares.ShiftingWaresMod"
 		]
 	},
 	"mixins": [
 		"shifting-wares.mixins.json"
 	],
-	"accessWidener" : "shifting-wares.accesswidener",
 	"depends": {
 		"minecraft": "^1.21",
-		"fabricloader": ">=0.16.7",
+		"fabricloader": ">=0.16.10",
 		"fabric-api": "*",
 		"java": ">=21"
 	},
