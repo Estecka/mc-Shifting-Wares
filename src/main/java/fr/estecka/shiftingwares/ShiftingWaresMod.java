@@ -5,17 +5,18 @@ import net.fabricmc.fabric.api.gamerule.v1.CustomGameRuleCategory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.Unit;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradedItem;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.GameRules.BooleanRule;
 import fr.estecka.shiftingwares.TradeLayouts.VanillaTradeLayout;
+import it.unimi.dsi.fastutil.objects.ReferenceSortedSets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +38,7 @@ implements ModInitializer
 	static {
 		TradedItem fake_air = new TradedItem(Items.EMERALD).withComponents( builder -> {
 			builder.add(DataComponentTypes.ITEM_NAME, Text.literal("Unobtainium"));
-			builder.add(DataComponentTypes.HIDE_TOOLTIP, Unit.INSTANCE);
+			builder.add(DataComponentTypes.TOOLTIP_DISPLAY, new TooltipDisplayComponent(true, ReferenceSortedSets.emptySet()));
 			if (Registries.DATA_COMPONENT_TYPE.containsId(Identifier.ofVanilla("item_model"))) // 1.21.0 compatibility
 				builder.add(DataComponentTypes.ITEM_MODEL, Identifier.ofVanilla("air"));
 			return builder;

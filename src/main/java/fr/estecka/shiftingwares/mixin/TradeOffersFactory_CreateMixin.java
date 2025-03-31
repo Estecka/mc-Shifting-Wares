@@ -6,7 +6,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.MerchantEntity;
-import net.minecraft.entity.passive.WanderingTraderEntity;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOffers;
@@ -14,7 +13,6 @@ import fr.estecka.shiftingwares.ShiftingTradeData;
 
 @Mixin(value={
 	MerchantEntity.class,
-	WanderingTraderEntity.class,
 	TradeOffers.TypedWrapperFactory.class,
 })
 public class TradeOffersFactory_CreateMixin
@@ -24,7 +22,6 @@ public class TradeOffersFactory_CreateMixin
 		remap=false,
 		method={
 			"method_19170", "fillRecipesFromPool", // MerchantEntity
-			"method_7237",  "fillRecipes", // WanderingTraderEntity
 			"method_7246",  "create", // TypedWrapperFactory
 		},
 		at=@At(

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.resource.featuretoggle.FeatureFlags;
 import net.minecraft.util.Identifier;
 import net.minecraft.village.TradeOffers;
@@ -31,8 +32,8 @@ implements ITradeLayoutProvider
 
 	public List<Factory[]>	GetTradeLayout(VillagerEntity villager){
 		List<Factory[]> layout = new ArrayList<>();
-		VillagerProfession job = villager.getVillagerData().getProfession();
-		int jobLevel = villager.getVillagerData().getLevel();
+		RegistryKey<VillagerProfession> job = villager.getVillagerData().profession().getKey().get();
+		int jobLevel = villager.getVillagerData().level();
 
 		Int2ObjectMap<Factory[]> jobPool = TradeOffers.PROFESSION_TO_LEVELED_TRADE.get(job);
 		if (IS_EXP_TRADE_AVAILABLE 

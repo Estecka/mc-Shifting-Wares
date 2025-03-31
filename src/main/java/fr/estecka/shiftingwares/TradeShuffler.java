@@ -8,6 +8,7 @@ import java.util.Set;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
@@ -28,7 +29,7 @@ public class TradeShuffler
 	private final boolean depletedOnly;
 	private final boolean keepPersistent;
 
-	private final VillagerProfession job;
+	private final RegistryEntry<VillagerProfession> job;
 
 	private final Random random;
 	private final TradeOfferList offers;
@@ -41,7 +42,7 @@ public class TradeShuffler
 
 		this.keepPersistent = !villager.getServer().getGameRules().getBoolean(ShiftingWaresMod.MAP_RULE);
 		this.offers = villager.getOffers();
-		this.job = villager.getVillagerData().getProfession();
+		this.job = villager.getVillagerData().profession();
 		this.random = villager.getRandom();
 
 		this.tradeLayout = GetTradeLayout(villager);
