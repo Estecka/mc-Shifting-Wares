@@ -52,4 +52,7 @@ This boost performances when using Fresh Animations
 - Trades can now be given an identifier by their factories. ShiftingWares will prevent villagers from getting multiple trades coming from the same factory during rerolls. This will prevent the villager's listing from getting clogged up with multiple copies of the same persistent trade after any reroll, and prevent duplicatas of non-persistent from ocurring during depleted rerolls.
 - Other mods can provide the relevant data for their factories, by simply implementing the correct methods. No dependency on ShiftingWares is required.
 # 3.1
+### 3.1.0
 - Added a gamerule that prevents rerolls when breaking a workstation.
+### 3.1.1
+- Updated for MC 1.21.5
