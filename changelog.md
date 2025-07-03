@@ -11,7 +11,7 @@ Initial release
 **This version contains a critical bug and should not be used**
 - Introduced placeholder trades. Fixes cartographers having trouble generating high-level trades in worlds with no structures.
 ### 1.0.4
-- Fixes mapping issue affecting 1.0.2 and 1.0.3
+- Fixes mapping issue affecting v1.0.2 and v1.0.3
 ### 1.0.5
 - The level of each trade slot is evaluated more accurately for every job.
 
@@ -32,12 +32,27 @@ Initial release
 - Custom serialization is no longer callable from the render thread.
 ## 2.2
 ### 2.2.0
-- Updated for MC 1.20.5
+- Updated for MC 1.20.5
 - For caching, a map's `item_name` takes priority over the `custom_name` if both are present.
 - Placeholder trades are no longer empty. (Cosmetic change only.)
-- Added custom logic for upgrading caches from before 1.20.5
+- Added custom logic for upgrading caches from before MC 1.20.5
 ### 2.2.1
-- Updated for MC 1.21
+- Updated for MC 1.21
 ### 2.2.2
 - Custom serialization is no longer callable from the render thread.
 This boost performances when using Fresh Animations
+### 2.2.3
+- Updated for MC 1.21.2
+- Starting MC 1.21.2, placeholder trades now use `item_model`'s to look empty again.
+
+# v3
+## 3.0
+- Removed trade cache.
+- Trades can now be marked a persistent by their factories. Persistent items are *never* rerolled until they have been sold. Filled map trades are automatically marked as persistent regardless of the factories setting. This prevents mods who implement custom factories from causing unsold maps to be discarded.
+- Trades can now be given an identifier by their factories. ShiftingWares will prevent villagers from getting multiple trades coming from the same factory during rerolls. This will prevent the villager's listing from getting clogged up with multiple copies of the same persistent trade after any reroll, and prevent duplicatas of non-persistent from ocurring during depleted rerolls.
+- Other mods can provide the relevant data for their factories, by simply implementing the correct methods. No dependency on ShiftingWares is required.
+# 3.1
+### 3.1.0
+- Added a gamerule that prevents rerolls when breaking a workstation.
+### 3.1.1
+- Updated for MC 1.21.5

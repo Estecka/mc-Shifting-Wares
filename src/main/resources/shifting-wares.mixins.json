@@ -1,9 +1,13 @@
 {
 	"required": true,
-	"package": "tk.estecka.shiftingwares.mixin",
+	"package": "fr.estecka.shiftingwares.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
+		"IEntityAccessor",
 		"SellMapFactoryMixin",
+		"TradeOfferMixin",
+		"TradeOffersFactoryMixin",
+		"TradeOffersFactory_CreateMixin",
 		"VillagerEntityMixin"
 	],
 	"injectors": {

@@ -9,14 +9,15 @@
 	],
 	"contact": {
 		"homepage": "https://modrinth.com/mod/shifting-wares",
-		"sources": "https://github.com/Estecka/mc-Shifting-Wares"
+		"sources": "https://github.com/Estecka/mc-Shifting-Wares",
+		"issues":  "https://github.com/Estecka/mc-Shifting-Wares/issues"
 	},
-	"license": "GNU AGPLv3",
+	"license": "EUPL-1.2",
 	"icon": "assets/shifting-wares/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"tk.estecka.shiftingwares.ShiftingWares"
+			"fr.estecka.shiftingwares.ShiftingWaresMod"
 		]
 	},
 	"mixins": [
@@ -24,7 +25,7 @@
 	],
 	"depends": {
 		"minecraft": "<1.20.5",
-		"fabricloader": ">=0.15.3",
+		"fabricloader": ">=0.16.10",
 		"fabric-api": "*",
 		"java": ">=17"
 	},

@@ -1,13 +1,10 @@
-package tk.estecka.shiftingwares.mixin;
+package fr.estecka.shiftingwares.mixin;
 
 import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
-import tk.estecka.shiftingwares.IVillagerEntityDuck;
-import tk.estecka.shiftingwares.MapTradesCache;
-import tk.estecka.shiftingwares.ShiftingWares;
-import tk.estecka.shiftingwares.TradeShuffler;
+import net.minecraft.village.TradeOffers;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,21 +12,24 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import fr.estecka.shiftingwares.ShiftingWaresMod;
+import fr.estecka.shiftingwares.TradeShuffler;
 
 @Unique
 @Mixin(VillagerEntity.class)
 public abstract class VillagerEntityMixin
-implements IVillagerEntityDuck
 {
 	static private final TradeOfferList EMPTY = new TradeOfferList();
 
 	private final VillagerEntity villager = (VillagerEntity)(Object)this;
-	private final MapTradesCache tradeCache = new MapTradesCache();
 
-	private boolean	IsDailyRerollEnabled()   { return villager.getWorld().getGameRules().get(ShiftingWares.DAILY_RULE   ).get(); }
-	private boolean	IsDepleteRerollEnabled() { return villager.getWorld().getGameRules().get(ShiftingWares.DEPLETED_RULE).get(); }
+	private boolean	IsDailyRerollEnabled()   { return villager.getWorld().getGameRules().get(ShiftingWaresMod.DAILY_RULE   ).get(); }
+	private boolean	IsDepleteRerollEnabled() { return villager.getWorld().getGameRules().get(ShiftingWaresMod.DEPLETED_RULE).get(); }
 
-	public MapTradesCache shiftingwares$GetItemCache() { return this.tradeCache; }
+
+/******************************************************************************/
+/* # Daily Rerolls                                                            */
+/******************************************************************************/
 
 	/**
 	 * Triggered once a day, regardless of whether the villager needs restocks.
@@ -37,14 +37,15 @@ implements IVillagerEntityDuck
 	@Inject( method="restockAndUpdateDemandBonus", at=@At(value="HEAD") )
 	private void DailyReroll(CallbackInfo info) {
 		if (IsDailyRerollEnabled()){
-			ShiftingWares.LOGGER.info("A villager has restocked all their trades.");
+			ShiftingWaresMod.LOGGER.info("A villager has restocked all their trades.");
 			new TradeShuffler(villager, false).Reroll();
 		}
 		else if (IsDepleteRerollEnabled()){
-			ShiftingWares.LOGGER.info("A villager has restocked some trades.");
+			ShiftingWaresMod.LOGGER.info("A villager has restocked some trades.");
 			new TradeShuffler(villager, true).Reroll();
 		}
 	}
+
 	/**
 	 * This redirects the `for` loop that would normally refill all trades.
 	 * Daily refills are never needed  due to all trades being outright replaced
@@ -58,6 +59,11 @@ implements IVillagerEntityDuck
 			return original.call(me);
 	}
 
+
+/******************************************************************************/
+/* # Depleted Rerolls                                                         */
+/******************************************************************************/
+
 	/**
 	 * Triggered whenever the villager decides to restock due to low stocks.
 	 * (Excluding the daily restock.)
@@ -66,7 +72,7 @@ implements IVillagerEntityDuck
 	@WrapOperation( method="restock", at=@At(value="INVOKE", target="net/minecraft/entity/passive/VillagerEntity.getOffers ()Lnet/minecraft/village/TradeOfferList;") )
 	private TradeOfferList RestockReroll(VillagerEntity me, Operation<TradeOfferList> original) {
 		if (IsDepleteRerollEnabled()){
-			ShiftingWares.LOGGER.info("A villager has restocked some trades.");
+			ShiftingWaresMod.LOGGER.info("A villager has restocked some trades.");
 			new TradeShuffler(villager, true).Reroll();
 			return EMPTY;
 		}
@@ -80,7 +86,7 @@ implements IVillagerEntityDuck
 	 * This does not prevent partially used trades  from being refilled whenever
 	 * a restock does occurs, this only prevents restocks from being wasted.
 	 * 
-	 * @implNote Placeholder trades can never be "used" so they will never 
+	 * @implNote Placeholder  trades  can never  be "used" so  they  will  never
 	 * trigger restocks despite being "disabled".
 	 */
 	@WrapOperation( method="needsRestock", at=@At(value="INVOKE", target="net/minecraft/village/TradeOffer.hasBeenUsed ()Z") )
@@ -89,20 +95,28 @@ implements IVillagerEntityDuck
 	}
 
 
-	@Inject ( method="writeCustomDataToNbt", at=@At("TAIL"))
-	void	WriteCachedMapsToNbt(NbtCompound nbt, CallbackInfo info){
-		if (!villager.getWorld().isClient()){
-			this.tradeCache.FillCacheFromTrades(villager.getOffers());
-			this.tradeCache.WriteMapCacheToNbt(nbt);
-		}
-	}
+/******************************************************************************/
+/* # Workstation Protection                                                   */
+/******************************************************************************/
 
-	@Inject ( method="readCustomDataFromNbt", at=@At("TAIL"))
-	void	ReadCachedMapsFromNbt(NbtCompound nbt, CallbackInfo info){
-		if (!villager.getWorld().isClient()){
-			this.tradeCache.ReadMapCacheFromNbt(nbt);
-			this.tradeCache.FillCacheFromTrades(villager.getOffers());
+	/**
+	 * @implNote The villager's random  is completely replaced  for the duration
+	 * of the operation. That random is used  not only to select the trade offer
+	 * factories, but also inside the factories themselves.
+	 */
+	@WrapOperation( method="fillRecipes", at=@At(value="INVOKE", target="net/minecraft/entity/passive/VillagerEntity.fillRecipesFromPool(Lnet/minecraft/village/TradeOfferList;[Lnet/minecraft/village/TradeOffers$Factory;I)V"))
+	private void SetDeterministicRandom(VillagerEntity me, TradeOfferList list, TradeOffers.Factory[] pool, int count, Operation<Void> original){
+		boolean isDeterministic = me.getWorld().getGameRules().getBoolean(ShiftingWaresMod.WORKSTATION_RULE);
+
+		if (isDeterministic) {
+			IEntityAccessor accessor = (IEntityAccessor)me;
+			Random originalRandom = me.getRandom();
+			accessor.setRandom(Random.create(me.getUuid().hashCode()));
+			original.call(me, list, pool, count);
+			accessor.setRandom(originalRandom);
 		}
+		else
+			original.call(me, list, pool, count);
 	}
 
 }

@@ -16,5 +16,14 @@ Current master
 - Trade offers no longer support selling or buying air: Use some placeholder items instead.
 
 ### 1.21.0
-#### No Workaround
+#### No Workaround:
 - `getRandom()` was moved from `LivingEntity` to its parent class `Entity`. No code change required, but needs recompilation.
+
+### 1.21.2
+#### Worked around:
+- `World.getGamerules()` was moved to `ServerWorld`. Call it from `MinecraftServer` instead.
+
+### 1.21.5
+- Villager Data now hold registry entries instead of straight up data.
+- "Hide Tooltip" component was replaced with "Tooltip display".
+- Wandering Trader no longer needs special treatment to have its trade ids set. (Trade Rebalance merged.)
