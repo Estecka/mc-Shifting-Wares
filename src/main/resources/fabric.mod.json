@@ -24,7 +24,7 @@
 		"shifting-wares.mixins.json"
 	],
 	"depends": {
-		"minecraft": "~1.21.5",
+		"minecraft": ">=1.21.5 <=1.21.8",
 		"fabricloader": ">=0.16.10",
 		"fabric-api": "*",
 		"java": ">=21"

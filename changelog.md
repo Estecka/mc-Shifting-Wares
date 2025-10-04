@@ -56,3 +56,5 @@ This boost performances when using Fresh Animations
 - Added a gamerule that prevents rerolls when breaking a workstation.
 ### 3.1.1
 - Updated for MC 1.21.5
+### 3.1.2
+- Updated for MC 1.21.9
