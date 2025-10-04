@@ -23,8 +23,8 @@ public abstract class VillagerEntityMixin
 
 	private final VillagerEntity villager = (VillagerEntity)(Object)this;
 
-	private boolean	IsDailyRerollEnabled()   { return villager.getServer().getGameRules().get(ShiftingWaresMod.DAILY_RULE   ).get(); }
-	private boolean	IsDepleteRerollEnabled() { return villager.getServer().getGameRules().get(ShiftingWaresMod.DEPLETED_RULE).get(); }
+	private boolean	IsDailyRerollEnabled()   { return ShiftingWaresMod.GetBoolean(villager, ShiftingWaresMod.DAILY_RULE   ); }
+	private boolean	IsDepleteRerollEnabled() { return ShiftingWaresMod.GetBoolean(villager, ShiftingWaresMod.DEPLETED_RULE); }
 
 
 /******************************************************************************/
@@ -106,7 +106,7 @@ public abstract class VillagerEntityMixin
 	 */
 	@WrapOperation( method="fillRecipes", at=@At(value="INVOKE", target="net/minecraft/entity/passive/VillagerEntity.fillRecipesFromPool(Lnet/minecraft/village/TradeOfferList;[Lnet/minecraft/village/TradeOffers$Factory;I)V"))
 	private void SetDeterministicRandom(VillagerEntity me, TradeOfferList list, TradeOffers.Factory[] pool, int count, Operation<Void> original){
-		boolean isDeterministic = me.getServer().getGameRules().getBoolean(ShiftingWaresMod.WORKSTATION_RULE);
+		boolean isDeterministic = ShiftingWaresMod.GetBoolean(me, ShiftingWaresMod.WORKSTATION_RULE);
 
 		if (isDeterministic) {
 			IEntityAccessor accessor = (IEntityAccessor)me;

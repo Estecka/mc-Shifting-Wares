@@ -6,8 +6,10 @@ import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.TooltipDisplayComponent;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.Items;
 import net.minecraft.registry.Registries;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -34,7 +36,6 @@ implements ModInitializer
 	static public final GameRules.Key<BooleanRule> MAP_RULE      = GameRuleRegistry.register("shiftingWares.allowMapReroll", RULE_CATEGORY, GameRuleFactory.createBooleanRule(false));
 
 	static public final TradeOffer PLACEHOLDER_TRADE;
-	
 	static {
 		TradedItem fake_air = new TradedItem(Items.EMERALD).withComponents( builder -> {
 			builder.add(DataComponentTypes.ITEM_NAME, Text.literal("Unobtainium"));
@@ -49,6 +50,10 @@ implements ModInitializer
 			fake_air.itemStack(),
 			0, 0, 0
 		);
+	}
+
+	static public boolean GetBoolean(Entity entity, GameRules.Key<BooleanRule> rule){
+		return ((ServerWorld)entity.getEntityWorld()).getGameRules().getBoolean(rule);
 	}
 
 	@Override

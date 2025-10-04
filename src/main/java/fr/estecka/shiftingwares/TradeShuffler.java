@@ -40,7 +40,7 @@ public class TradeShuffler
 		this.villager = villager;
 		this.depletedOnly = depletedOnly;
 
-		this.keepPersistent = !villager.getServer().getGameRules().getBoolean(ShiftingWaresMod.MAP_RULE);
+		this.keepPersistent = ShiftingWaresMod.GetBoolean(villager, ShiftingWaresMod.MAP_RULE);
 		this.offers = villager.getOffers();
 		this.job = villager.getVillagerData().profession();
 		this.random = villager.getRandom();

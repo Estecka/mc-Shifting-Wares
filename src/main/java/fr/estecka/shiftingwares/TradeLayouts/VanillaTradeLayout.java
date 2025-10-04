@@ -37,7 +37,7 @@ implements ITradeLayoutProvider
 
 		Int2ObjectMap<Factory[]> jobPool = TradeOffers.PROFESSION_TO_LEVELED_TRADE.get(job);
 		if (IS_EXP_TRADE_AVAILABLE 
-		&& villager.getWorld().getEnabledFeatures().contains(FeatureFlags.TRADE_REBALANCE)
+		&& villager.getEntityWorld().getEnabledFeatures().contains(FeatureFlags.TRADE_REBALANCE)
 		&& TradeOffers.REBALANCED_PROFESSION_TO_LEVELED_TRADE.containsKey(job)
 		) {
 			jobPool = TradeOffers.REBALANCED_PROFESSION_TO_LEVELED_TRADE.get(job);
