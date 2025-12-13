@@ -58,3 +58,5 @@ This boost performances when using Fresh Animations
 - Updated for MC 1.21.5
 ### 3.1.2
 - Updated for MC 1.21.9
+### 3.1.3
+- Updated for MC 1.21.11

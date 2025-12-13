@@ -1,7 +1,10 @@
+*.bak
+
 # gradle
 
 .gradle/
 build/
+libs/
 out/
 classes/
 

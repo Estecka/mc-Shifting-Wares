@@ -30,3 +30,6 @@ Current master
 - `Entity.getEntityWorld()` was moved to a superinterface.
 - `Entity.getWorld()` was removed.
 - `Entity.getServer()` was removed.
+
+### 1.21.11
+- Gamerules must now be registered via regular registries.
