@@ -11,9 +11,9 @@ Because all trades eventually expire, villagers become much easier to replace if
 
 There are two gamerules that control when trades can be re-rolled. Both are enabled by default.
 Disabling all rules effectively disables the mod.
-- `shiftingWares.dailyReroll`:
+- `shifting-wares:daily_reroll` :
 	Causes villagers to re-roll **all** their offers once per day, the first time they restock at their job station.
-- `shiftingWares.depleteReroll`:
+- `shifting-wares:deplete_reroll` :
 	Causes villagers to re-roll any **fully depleted** trade offer, whenever they restock at their job station.
 	This also prevents offers from being refilled, if they have a remaining uses.
 
@@ -21,13 +21,13 @@ Disabling all rules effectively disables the mod.
 Minecraft permanently saves all created maps, and lock their structures from appearing on other exploration maps.
 To prevent daily rerolls from throwing away endless amounts of unsold maps, those trades are handled differently.
 
-By default, map trades will never be rerolled. They may only be rerolled if the gamerule `shiftingWares.allowMapReroll` is enabled, and if the trade has been used at least once.
+By default, map trades will never be rerolled. They may only be rerolled if the gamerule `shifting-wares:allow_map_reroll` is enabled, and if the trade has been used at least once.
 
 ## Workstation protection
 
 Breaking and replacing a villager's workstation no longer forces the villager to reroll its trades. The initial trades are generated with a deterministic random, using the villager's UUID as the seed.
 
-This is controlled by the gamerule `shiftingWares.workstationProtection`.
+This is controlled by the gamerule `shifting-wares:workstation_protection`.
 
 ## Miscellani technical details
 - If a villager is unable to generate a trade for a slot, it will be replaced with an empty trade. In vanilla, this should only ever happen to cartographers, who are unable to generate explorer maps in worlds with no structures.  

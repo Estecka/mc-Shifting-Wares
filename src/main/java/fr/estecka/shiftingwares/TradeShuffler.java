@@ -9,6 +9,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
@@ -149,7 +150,7 @@ public class TradeShuffler
 			while (offer == null && !pool.isEmpty()) {
 				int roll = random.nextInt(pool.size());
 				factory = pool.get(roll);
-				offer = factory.create(villager, random);
+				offer = factory.create((ServerWorld)villager.getEntityWorld(), villager, random);
 				pool.remove(roll);
 			}
 

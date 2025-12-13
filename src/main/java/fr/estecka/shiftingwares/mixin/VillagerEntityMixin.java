@@ -1,6 +1,7 @@
 package fr.estecka.shiftingwares.mixin;
 
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
@@ -104,19 +105,25 @@ public abstract class VillagerEntityMixin
 	 * of the operation. That random is used  not only to select the trade offer
 	 * factories, but also inside the factories themselves.
 	 */
-	@WrapOperation( method="fillRecipes", at=@At(value="INVOKE", target="net/minecraft/entity/passive/VillagerEntity.fillRecipesFromPool(Lnet/minecraft/village/TradeOfferList;[Lnet/minecraft/village/TradeOffers$Factory;I)V"))
-	private void SetDeterministicRandom(VillagerEntity me, TradeOfferList list, TradeOffers.Factory[] pool, int count, Operation<Void> original){
+	@WrapOperation(
+		method = "fillRecipes",
+		at = @At(
+			value = "INVOKE",
+			target = "net/minecraft/entity/passive/VillagerEntity.fillRecipesFromPool(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/village/TradeOfferList;[Lnet/minecraft/village/TradeOffers$Factory;I)V"
+		)
+	)
+	private void SetDeterministicRandom(VillagerEntity me, ServerWorld world, TradeOfferList list, TradeOffers.Factory[] pool, int count, Operation<Void> original){
 		boolean isDeterministic = ShiftingWaresMod.GetBoolean(me, ShiftingWaresMod.WORKSTATION_RULE);
 
 		if (isDeterministic) {
 			IEntityAccessor accessor = (IEntityAccessor)me;
 			Random originalRandom = me.getRandom();
 			accessor.setRandom(Random.create(me.getUuid().hashCode()));
-			original.call(me, list, pool, count);
+			original.call(me, world, list, pool, count);
 			accessor.setRandom(originalRandom);
 		}
 		else
-			original.call(me, list, pool, count);
+			original.call(me, world, list, pool, count);
 	}
 
 }

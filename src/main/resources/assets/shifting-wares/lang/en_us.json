@@ -1,11 +1,11 @@
 {
-	"gamerule.category.shiftingwares": "Shifting Wares",
-	"gamerule.shiftingWares.allowMapReroll": "Exploration Map reroll",
-	"gamerule.shiftingWares.allowMapReroll.description": "Buying a map from a cartographer allows them to generate a new one.",
-	"gamerule.shiftingWares.dailyReroll": "Daily reroll",
-	"gamerule.shiftingWares.dailyReroll.description": "Villagers will reroll all their offers once per day.",
-	"gamerule.shiftingWares.depleteReroll": "Reroll depleted offers",
-	"gamerule.shiftingWares.depleteReroll.description": "Villagers will never refill their offers. Instead, those are rerolled after being completely depleted.",
-	"gamerule.shiftingWares.workstationProtection": "Workstation Protection",
-	"gamerule.shiftingWares.workstationProtection.description": "Prevents rerolling trades by breaking and replacing a villager's workstation."
+	"gamerule.category.shifting-wares.gamerules": "Shifting-Wares",
+	"gamerule.shifting-wares.allow_map_reroll": "Exploration Map reroll",
+	"gamerule.shifting-wares.allow_map_reroll.description": "Buying a map from a cartographer allows them to generate a new one.",
+	"gamerule.shifting-wares.daily_reroll": "Daily reroll",
+	"gamerule.shifting-wares.daily_reroll.description": "Villagers will reroll all their offers once per day.",
+	"gamerule.shifting-wares.deplete_reroll": "Reroll depleted offers",
+	"gamerule.shifting-wares.deplete_reroll.description": "Villagers will never refill their offers. Instead, those are rerolled after being completely depleted.",
+	"gamerule.shifting-wares.workstation_protection": "Workstation Protection",
+	"gamerule.shifting-wares.workstation_protection.description": "Prevents rerolling trades by breaking and replacing a villager's workstation."
 }

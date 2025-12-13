@@ -33,3 +33,5 @@ Current master
 
 ### 1.21.11
 - Gamerules must now be registered via regular registries.
+- `TradeOffer::create` now takes a `ServerWorld` as parameters.
+- `VillagerEntity::fillRecipesFromPool` now takes a ServerWorld as parameter.

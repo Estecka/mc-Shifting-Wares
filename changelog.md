@@ -59,4 +59,7 @@ This boost performances when using Fresh Animations
 ### 3.1.2
 - Updated for MC 1.21.9
 ### 3.1.3
-- Updated for MC 1.21.11
+- Marked incompatible with MC 1.21.11
+## 3.2.0
+- Port to MC 1.21.11
+- Changed gamerule names and translation keys to match Minecraft's new requirements.
