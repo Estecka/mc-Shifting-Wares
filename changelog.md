@@ -60,6 +60,12 @@ This boost performances when using Fresh Animations
 - Updated for MC 1.21.9
 ### 3.1.3
 - Marked incompatible with MC 1.21.11
+### 3.1.4
+- Fixed map gamerule behaviour being inverted.
 ## 3.2.0
+### 3.2.0
+Since 3.1.3:
 - Port to MC 1.21.11
 - Changed gamerule names and translation keys to match Minecraft's new requirements.
+### 3.2.1
+- Fixed map gamerule behaviour being inverted.
