@@ -3,12 +3,10 @@
 	"package": "fr.estecka.shiftingwares.mixin",
 	"compatibilityLevel": "JAVA_21",
 	"mixins": [
-		"IEntityAccessor",
+		"AbstractVillagerMixin",
 		"GameRuleRegistryFixMixin",
-		"SellMapFactoryMixin",
+		"TradeFactoryMixin",
 		"TradeOfferMixin",
-		"TradeOffersFactoryMixin",
-		"TradeOffersFactory_CreateMixin",
 		"VillagerEntityMixin"
 	],
 	"injectors": {

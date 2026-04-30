@@ -69,3 +69,8 @@ Since 3.1.3:
 - Changed gamerule names and translation keys to match Minecraft's new requirements.
 ### 3.2.1
 - Fixed map gamerule behaviour being inverted.
+
+# v4
+- Removed API
+- Trades can be marked as persistent in datapacks.
+- Renamed rule `allow_map_reroll` to `allow_persistent_reroll`

@@ -1,6 +1,7 @@
 package fr.estecka.shiftingwares.mixin;
 
 import java.util.function.Function;
+import net.minecraft.world.item.trading.MerchantOffer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,34 +11,39 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.village.TradeOffer;
-import fr.estecka.shiftingwares.ShiftingTradeData;
+import fr.estecka.shiftingwares.ShiftingOfferData;
 import fr.estecka.shiftingwares.duck.ITradeOfferDuck;
 
 @Unique
-@Mixin(TradeOffer.class)
+@Mixin(MerchantOffer.class)
 public class TradeOfferMixin
 implements ITradeOfferDuck
 {
-	private ShiftingTradeData data = new ShiftingTradeData();
+	private ShiftingOfferData data = new ShiftingOfferData();
 
 	@Override
-	public ShiftingTradeData shiftingwares$GetTradeData(){
+	public ShiftingOfferData shiftingwares$GetTradeData(){
 		return this.data;
 	}
 
 	@Override
-	public void shiftingwares$SetTradeData(ShiftingTradeData data){
+	public void shiftingwares$SetTradeData(ShiftingOfferData data){
 		this.data = data;
 	}
 
-	@ModifyExpressionValue( method="<clinit>", at=@At(value="INVOKE", remap=false, target="com/mojang/serialization/codecs/RecordCodecBuilder.create(Ljava/util/function/Function;)Lcom/mojang/serialization/Codec;") )
-	static private Codec<TradeOffer> ExtendCodec(Codec<TradeOffer> original)
+	@ModifyExpressionValue(
+		method = "<clinit>",
+		at = @At(
+			value = "INVOKE",
+			target = "com/mojang/serialization/codecs/RecordCodecBuilder.create(Ljava/util/function/Function;)Lcom/mojang/serialization/Codec;"
+		)
+	)
+	static private Codec<MerchantOffer> ExtendCodec(Codec<MerchantOffer> original)
 	{
 		return RecordCodecBuilder.create(instance -> 
 			instance.group(
 				MapCodec.assumeMapUnsafe(original).forGetter(Function.identity()),
-				ShiftingTradeData.CODEC.fieldOf("shiftingwares:tradeData").orElseGet(()->new ShiftingTradeData()).forGetter(offer -> ITradeOfferDuck.Of(offer).shiftingwares$GetTradeData())
+				ShiftingOfferData.CODEC.fieldOf("shiftingwares:tradeData").orElseGet(()->new ShiftingOfferData()).forGetter(offer -> ITradeOfferDuck.Of(offer).shiftingwares$GetTradeData())
 			)
 			.apply(instance, (offer,data)->{
 				ITradeOfferDuck.Of(offer).shiftingwares$SetTradeData(data);
@@ -46,7 +52,7 @@ implements ITradeOfferDuck
 		);
 	}
 
-	@Inject( method="use", at=@At("TAIL") )
+	@Inject( method="increaseUses", at=@At("TAIL") )
 	private void use(CallbackInfo ci){
 		this.data.wasNeverUsed = false;
 	}

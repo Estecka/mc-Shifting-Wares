@@ -1,7 +1,7 @@
 {
 	"gamerule.category.shifting-wares.gamerules": "Shifting-Wares",
-	"gamerule.shifting-wares.allow_map_reroll": "Exploration Map reroll",
-	"gamerule.shifting-wares.allow_map_reroll.description": "Buying a map from a cartographer allows them to generate a new one.",
+	"gamerule.shifting-wares.allow_persistent_reroll": "Persistent Trades reroll",
+	"gamerule.shifting-wares.allow_persistent_reroll.description": "Allow peristent trades (e.g: exploration maps) to be rerolled, if they have been used at least once.",
 	"gamerule.shifting-wares.daily_reroll": "Daily reroll",
 	"gamerule.shifting-wares.daily_reroll.description": "Villagers will reroll all their offers once per day.",
 	"gamerule.shifting-wares.deplete_reroll": "Reroll depleted offers",

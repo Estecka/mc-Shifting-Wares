@@ -1,11 +1,5 @@
 package fr.estecka.shiftingwares.mixin;
 
-import net.minecraft.entity.passive.VillagerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.village.TradeOffer;
-import net.minecraft.village.TradeOfferList;
-import net.minecraft.village.TradeOffers;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,14 +9,17 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import fr.estecka.shiftingwares.ShiftingWaresMod;
 import fr.estecka.shiftingwares.TradeShuffler;
+import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.item.trading.MerchantOffers;
 
 @Unique
-@Mixin(VillagerEntity.class)
+@Mixin(Villager.class)
 public abstract class VillagerEntityMixin
 {
-	static private final TradeOfferList EMPTY = new TradeOfferList();
+	static private final MerchantOffers EMPTY = new MerchantOffers();
 
-	private final VillagerEntity villager = (VillagerEntity)(Object)this;
+	private final Villager villager = (Villager)(Object)this;
 
 	private boolean	IsDailyRerollEnabled()   { return ShiftingWaresMod.GetBoolean(villager, ShiftingWaresMod.DAILY_RULE   ); }
 	private boolean	IsDepleteRerollEnabled() { return ShiftingWaresMod.GetBoolean(villager, ShiftingWaresMod.DEPLETED_RULE); }
@@ -35,7 +32,7 @@ public abstract class VillagerEntityMixin
 	/**
 	 * Triggered once a day, regardless of whether the villager needs restocks.
 	 */
-	@Inject( method="restockAndUpdateDemandBonus", at=@At(value="HEAD") )
+	@Inject( method="catchUpDemand", at=@At(value="HEAD") )
 	private void DailyReroll(CallbackInfo info) {
 		if (IsDailyRerollEnabled()){
 			ShiftingWaresMod.LOGGER.info("A villager has restocked all their trades.");
@@ -52,8 +49,14 @@ public abstract class VillagerEntityMixin
 	 * Daily refills are never needed  due to all trades being outright replaced
 	 * when refills are allowed.
 	 */
-	@WrapOperation( method="restockAndUpdateDemandBonus", at=@At(value="INVOKE", target="net/minecraft/entity/passive/VillagerEntity.getOffers ()Lnet/minecraft/village/TradeOfferList;") )
-	private TradeOfferList DailyRefill(VillagerEntity me, Operation<TradeOfferList> original) {
+	@WrapOperation(
+		method = "catchUpDemand",
+		at = @At(
+			value = "INVOKE",
+			target = "net/minecraft/world/entity/npc/villager/Villager.getOffers()Lnet/minecraft/world/item/trading/MerchantOffers;"
+		)
+	)
+	private MerchantOffers DailyRefill(Villager me, Operation<MerchantOffers> original) {
 		if (IsDailyRerollEnabled() || IsDepleteRerollEnabled())
 			return EMPTY;
 		else
@@ -70,8 +73,14 @@ public abstract class VillagerEntityMixin
 	 * (Excluding the daily restock.)
 	 * This also redirects the `for` loop that would normally refill all trades.
 	 */
-	@WrapOperation( method="restock", at=@At(value="INVOKE", target="net/minecraft/entity/passive/VillagerEntity.getOffers ()Lnet/minecraft/village/TradeOfferList;") )
-	private TradeOfferList RestockReroll(VillagerEntity me, Operation<TradeOfferList> original) {
+	@WrapOperation(
+		method = "restock",
+		at = @At(
+			value = "INVOKE",
+			target = "net/minecraft/world/entity/npc/villager/Villager.getOffers()Lnet/minecraft/world/item/trading/MerchantOffers;"
+		)
+	)
+	private MerchantOffers RestockReroll(Villager me, Operation<MerchantOffers> original) {
 		if (IsDepleteRerollEnabled()){
 			ShiftingWaresMod.LOGGER.info("A villager has restocked some trades.");
 			new TradeShuffler(villager, true).Reroll();
@@ -90,40 +99,15 @@ public abstract class VillagerEntityMixin
 	 * @implNote Placeholder  trades  can never  be "used" so  they  will  never
 	 * trigger restocks despite being "disabled".
 	 */
-	@WrapOperation( method="needsRestock", at=@At(value="INVOKE", target="net/minecraft/village/TradeOffer.hasBeenUsed ()Z") )
-	private boolean RestockDepletedOnly(TradeOffer offer, Operation<Boolean> hasBeenUsed){
-		return hasBeenUsed.call(offer) && (offer.isDisabled() || !IsDepleteRerollEnabled());
-	}
-
-
-/******************************************************************************/
-/* # Workstation Protection                                                   */
-/******************************************************************************/
-
-	/**
-	 * @implNote The villager's random  is completely replaced  for the duration
-	 * of the operation. That random is used  not only to select the trade offer
-	 * factories, but also inside the factories themselves.
-	 */
 	@WrapOperation(
-		method = "fillRecipes",
+		method = "needsToRestock",
 		at = @At(
 			value = "INVOKE",
-			target = "net/minecraft/entity/passive/VillagerEntity.fillRecipesFromPool(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/village/TradeOfferList;[Lnet/minecraft/village/TradeOffers$Factory;I)V"
+			target = "net/minecraft/world/item/trading/MerchantOffer.needsRestock()Z"
 		)
 	)
-	private void SetDeterministicRandom(VillagerEntity me, ServerWorld world, TradeOfferList list, TradeOffers.Factory[] pool, int count, Operation<Void> original){
-		boolean isDeterministic = ShiftingWaresMod.GetBoolean(me, ShiftingWaresMod.WORKSTATION_RULE);
-
-		if (isDeterministic) {
-			IEntityAccessor accessor = (IEntityAccessor)me;
-			Random originalRandom = me.getRandom();
-			accessor.setRandom(Random.create(me.getUuid().hashCode()));
-			original.call(me, world, list, pool, count);
-			accessor.setRandom(originalRandom);
-		}
-		else
-			original.call(me, world, list, pool, count);
+	private boolean RestockDepletedOnly(MerchantOffer offer, Operation<Boolean> hasBeenUsed){
+		return hasBeenUsed.call(offer) && (offer.isOutOfStock() || !IsDepleteRerollEnabled());
 	}
 
 }

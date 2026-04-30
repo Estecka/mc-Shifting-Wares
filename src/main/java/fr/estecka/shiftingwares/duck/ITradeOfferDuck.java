@@ -1,14 +1,14 @@
 package fr.estecka.shiftingwares.duck;
 
-import net.minecraft.village.TradeOffer;
-import fr.estecka.shiftingwares.ShiftingTradeData;
+import fr.estecka.shiftingwares.ShiftingOfferData;
+import net.minecraft.world.item.trading.MerchantOffer;
 
 public interface ITradeOfferDuck
 {
-	static public ITradeOfferDuck Of(TradeOffer offer){
+	static public ITradeOfferDuck Of(MerchantOffer offer){
 		return (ITradeOfferDuck)offer;
 	}
 
-	ShiftingTradeData shiftingwares$GetTradeData();
-	void shiftingwares$SetTradeData(ShiftingTradeData data);
+	ShiftingOfferData shiftingwares$GetTradeData();
+	void shiftingwares$SetTradeData(ShiftingOfferData data);
 }
