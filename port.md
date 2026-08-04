@@ -1,6 +1,6 @@
 # Minecraft Code Breaking Changes
 ### 1.19.4
-Current master
+Initial Release
 
 ### 1.20.2
 #### Backward compatibility workaround:
@@ -35,3 +35,12 @@ Current master
 - Gamerules must now be registered via regular registries.
 - `TradeOffer::create` now takes a `ServerWorld` as parameters.
 - `VillagerEntity::fillRecipesFromPool` now takes a ServerWorld as parameter.
+
+## 26
+### 26.1
+- Mojmapocalypse
+- Addition of data-driven trades, leading to sweeping code overhauls.
+
+### 26.2
+- An Optional was unwrapped, changing mixin injection signatures. (Mojang fixed a bug a reported :3)
+  (https://report.bugs.mojang.com/servicedesk/customer/portal/2/MC-307833)

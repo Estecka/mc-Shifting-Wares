@@ -27,20 +27,6 @@ public class AbstractVillagerMixin
 	@WrapOperation(
 		method = {
 			"addOffersFromItemListings",
-		},
-		at = @At(
-			value = "INVOKE",
-			target = "net/minecraft/world/item/trading/VillagerTrade.getOffer(Lnet/minecraft/world/level/storage/loot/LootContext;)Lnet/minecraft/world/item/trading/MerchantOffer;"
-		)
-	)
-	static private MerchantOffer AddShiftingData(VillagerTrade factory, LootContext lootContext, Operation<MerchantOffer> original, @Local Optional<Holder<VillagerTrade>> holder){
-		MerchantOffer offer = original.call(factory, lootContext);
-		ShiftingOfferData.FinalizeOffer(offer, holder.get());
-		return offer;
-	}
-
-	@WrapOperation(
-		method = {
 			"addOffersFromItemListingsWithoutDuplicates",
 		},
 		at = @At(
