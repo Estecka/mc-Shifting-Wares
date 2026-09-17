@@ -42,7 +42,7 @@ public record SlotRerollSource(
 			;
 
 		Map<Identifier,VillagerTrade> tradePool = new HashMap<>();
-		for (Holder<VillagerTrade> tradeEntry : tradeSet.getTrades())
+		for (Holder<VillagerTrade> tradeEntry : tradeSet.trades())
 			tradePool.put(tradeEntry.unwrapKey().get().identifier(), tradeEntry.value());
 
 		LootContext lootContext = CreateLootContext(villager, tradeSet);

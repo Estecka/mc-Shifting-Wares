@@ -44,3 +44,6 @@ Initial Release
 ### 26.2
 - An Optional was unwrapped, changing mixin injection signatures. (Mojang fixed a bug a reported :3)
   (https://report.bugs.mojang.com/servicedesk/customer/portal/2/MC-307833)
+
+### 26.3
+- `TradeSet::getTrades()` was renamed to `trades()`
